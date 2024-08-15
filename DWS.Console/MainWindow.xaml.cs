@@ -23,7 +23,8 @@ public partial class MainWindow : Window
 
     private void NewTask_Click(object sender, RoutedEventArgs e)
     {
-        var newTaskDialog = new NewTaskDialog();
+        var viewModel = new NewTaskViewModel(JinagaConfig.Client);
+        var newTaskDialog = new NewTaskDialog(viewModel);
         newTaskDialog.ShowDialog();
     }
 }

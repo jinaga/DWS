@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assisticant;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,7 +25,7 @@ namespace DWS.Console.Areas.Tasks
         public NewTaskDialog(NewTaskViewModel viewModel)
         {
             this.viewModel = viewModel;
-            DataContext = viewModel;
+            DataContext = ForView.Wrap(viewModel);
             InitializeComponent();
         }
     }

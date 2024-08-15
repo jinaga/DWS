@@ -19,8 +19,12 @@ namespace DWS.Console.Areas.Tasks
     /// </summary>
     public partial class NewTaskDialog : Window
     {
-        public NewTaskDialog()
+        private readonly NewTaskViewModel viewModel;
+
+        public NewTaskDialog(NewTaskViewModel viewModel)
         {
+            this.viewModel = viewModel;
+            DataContext = viewModel;
             InitializeComponent();
         }
     }

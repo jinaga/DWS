@@ -6,6 +6,6 @@ using System.Threading.Tasks;
 
 namespace DWS.Console.Areas.Tasks;
 
-class NewTaskViewModel
+public class NewTaskViewModel(JinagaClient jinagaClient)
 {
 }

@@ -2,12 +2,10 @@
 
 namespace DWS.Console.Areas.Tasks;
 
-public class NewTaskViewModel(JinagaClient jinagaClient)
-{
-    private ObservableList<ClientModel> clients = new ObservableList<ClientModel>();
 
-    public IEnumerable<ClientViewModel> Clients =>
-        clients.Select(client => new ClientViewModel(client));
+public partial class NewTaskViewModel(JinagaClient jinagaClient) : ObservableObject
+{
+    public ObservableCollection<YardViewModel> Yards { get; } = [];
 
     public void Load()
     {
@@ -19,28 +17,44 @@ public class NewTaskViewModel(JinagaClient jinagaClient)
           select new
           {
               clientNames = facts.Observable(client.Names.Select(name => name.value)),
-              yardNames = yard.Names.Select(name => name.value),
-              yardAddresses = yard.Addresses.Select(address => new
+              yardNames = facts.Observable(yard.Names.Select(name => name.value)),
+              yardAddresses = facts.Observable(yard.Addresses.Select(address => new
               {
                   street = address.street,
                   number = address.number,
                   postalCode = address.postalCode,
                   city = address.place,
                   country = address.country
-              })
+              }))
           }
         );
 
         Supplier supplier = null!;
         jinagaClient.Watch(yardsInSupplier, supplier, yardProjection =>
         {
-            ClientModel client = new ClientModel();
-            clients.Add(client);
+            YardViewModel yard = new YardViewModel();
+            Yards.Add(yard);
 
             yardProjection.clientNames.OnAdded(name =>
             {
-                client.Name = name;
+                yard.ClientName = name;
             });
+
+            yardProjection.yardNames.OnAdded(name =>
+            {
+                yard.YardName = name;
+            });
+
+            yardProjection.yardAddresses.OnAdded(address =>
+            {
+                yard.Street = address.street;
+                yard.Number = address.number;
+                yard.PostalCode = address.postalCode;
+                yard.City = address.city;
+                yard.Country = address.country;
+            });
+
+            return () => Yards.Remove(yard);
         });
     }
 }

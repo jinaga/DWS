@@ -1,3 +1,3 @@
-﻿global using Assisticant.Fields;
-global using Assisticant.Collections;
+﻿global using CommunityToolkit.Mvvm.ComponentModel;
 global using Jinaga;
+global using System.Collections.ObjectModel;

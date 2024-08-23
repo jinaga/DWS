@@ -192,7 +192,7 @@ public record TypeOfLeaveName(TypeOfLeave typeOfLeave, string value, TypeOfLeave
 public record TypeOfLeaveIcon(TypeOfLeave typeOfLeave, string hash, TypeOfLeaveIcon[] prior);
 
 [FactType("DWS.Task")]
-public record Task(Yard yard, Guid taskGuid)
+public record DWSTask(Yard yard, Guid taskGuid)
 {
     public Relation<TaskClientName> ClientNames => Relation.Define(facts =>
       from name in facts.OfType<TaskClientName>()
@@ -241,32 +241,32 @@ public record Task(Yard yard, Guid taskGuid)
 }
 
 [FactType("DWS.Task.Delete")]
-public record TaskDelete(Task task, DateTime deletedDate);
+public record TaskDelete(DWSTask task, DateTime deletedDate);
 
 [FactType("DWS.Task.Restore")]
 public record TaskRestore(TaskDelete taskDelete);
 
 [FactType("DWS.Task.ClientName")]
-public record TaskClientName(Task task, string value, TaskClientName[] prior);
+public record TaskClientName(DWSTask task, string value, TaskClientName[] prior);
 
 [FactType("DWS.Task.YardName")]
-public record TaskYardName(Task task, string value, TaskYardName[] prior);
+public record TaskYardName(DWSTask task, string value, TaskYardName[] prior);
 
 [FactType("DWS.Task.YardAddress")]
-public record TaskYardAddress(Task task, string street, string number, string postalCode, string place, string country, TaskYardAddress[] prior);
+public record TaskYardAddress(DWSTask task, string street, string number, string postalCode, string place, string country, TaskYardAddress[] prior);
 
 [FactType("DWS.Task.Tool.Lookup")]
-public record TaskToolLookup(Task task, Tool tool, DateTime createdDate);
+public record TaskToolLookup(DWSTask task, Tool tool, DateTime createdDate);
 
 [FactType("DWS.Task.Tool.Lookup.Delete")]
 public record TaskToolLookupDelete(TaskToolLookup taskToolLookup);
 
 [FactType("DWS.Task.Tool.OnTheFly")]
-public record TaskToolOnTheFly(Task task, string name, DateTime createdDate);
+public record TaskToolOnTheFly(DWSTask task, string name, DateTime createdDate);
 
 [FactType("DWS.Task.Tool.OnTheFly.Delete")]
 public record TaskToolOnTheFlyDelete(TaskToolOnTheFly taskToolOnTheFly);
 
 [FactType("DWS.Task.Worker")]
-public record TaskWorker(Task task, Worker worker, TaskWorker[] prior);
+public record TaskWorker(DWSTask task, Worker worker, TaskWorker[] prior);
 

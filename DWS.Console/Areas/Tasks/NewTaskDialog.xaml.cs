@@ -15,5 +15,11 @@ namespace DWS.Console.Areas.Tasks
             DataContext = viewModel;
             InitializeComponent();
         }
+
+        protected override void OnActivated(EventArgs e)
+        {
+            viewModel.Load();
+            base.OnActivated(e);
+        }
     }
 }

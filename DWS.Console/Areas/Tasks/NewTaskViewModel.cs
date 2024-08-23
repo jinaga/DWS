@@ -7,7 +7,7 @@ public partial class NewTaskViewModel(JinagaClient jinagaClient) : ObservableObj
 {
     public ObservableCollection<YardViewModel> Yards { get; } = [];
 
-    public void Load()
+    public async Task Load()
     {
         var yardsInSupplier = Given<Supplier>.Match((supplier, facts) =>
           from client in facts.OfType<Client>()
@@ -29,7 +29,7 @@ public partial class NewTaskViewModel(JinagaClient jinagaClient) : ObservableObj
           }
         );
 
-        Supplier supplier = null!;
+        Supplier supplier = await JinagaConfig.CreateSampleData(jinagaClient);
         jinagaClient.Watch(yardsInSupplier, supplier, yardProjection =>
         {
             YardViewModel yard = new YardViewModel();

@@ -1,0 +1,38 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+					xmlns:local="clr-namespace:DWS.Console.Areas.Tasks">
+
+	<DataTemplate DataType="{x:Type local:YardViewModel}">
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="100" />
+				<ColumnDefinition Width="5" /> <!-- Vertical bar -->
+				<ColumnDefinition Width="100" />
+				<ColumnDefinition Width="5" /> <!-- Vertical bar -->
+				<ColumnDefinition Width="100" />
+				<ColumnDefinition Width="5" /> <!-- Vertical bar -->
+				<ColumnDefinition Width="50" />
+				<ColumnDefinition Width="5" /> <!-- Vertical bar -->
+				<ColumnDefinition Width="80" />
+				<ColumnDefinition Width="5" /> <!-- Vertical bar -->
+				<ColumnDefinition Width="100" />
+				<ColumnDefinition Width="5" /> <!-- Vertical bar -->
+				<ColumnDefinition Width="100" />
+			</Grid.ColumnDefinitions>
+			<TextBlock Grid.Column="0" Text="{Binding ClientName}" />
+			<Border Grid.Column="1" Background="Black" Width="1" />
+			<TextBlock Grid.Column="2" Text="{Binding YardName}" />
+			<Border Grid.Column="3" Background="Black" Width="1" />
+			<TextBlock Grid.Column="4" Text="{Binding Street}" />
+			<Border Grid.Column="5" Background="Black" Width="1" />
+			<TextBlock Grid.Column="6" Text="{Binding Number}" />
+			<Border Grid.Column="7" Background="Black" Width="1" />
+			<TextBlock Grid.Column="8" Text="{Binding PostalCode}" />
+			<Border Grid.Column="9" Background="Black" Width="1" />
+			<TextBlock Grid.Column="10" Text="{Binding City}" />
+			<Border Grid.Column="11" Background="Black" Width="1" />
+			<TextBlock Grid.Column="12" Text="{Binding Country}" />
+		</Grid>
+	</DataTemplate>
+
+</ResourceDictionary>

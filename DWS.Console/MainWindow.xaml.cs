@@ -23,13 +23,10 @@ public partial class MainWindow : Window
 
     private async void NewTask_Click(object sender, RoutedEventArgs e)
     {
-        await Dispatcher.InvokeAsync(async () =>
-        {
-            var jinagaClient = JinagaConfig.Client;
-            var supplier = await JinagaConfig.CreateSampleData(jinagaClient);
-            var viewModel = new NewTaskViewModel(JinagaConfig.Client, supplier);
-            var newTaskDialog = new NewTaskDialog(viewModel);
-            newTaskDialog.ShowDialog();
-        });
+        var jinagaClient = JinagaConfig.Client;
+        var supplier = await JinagaConfig.CreateSampleData(jinagaClient);
+        var viewModel = new NewTaskViewModel(JinagaConfig.Client, supplier);
+        var newTaskDialog = new NewTaskDialog(viewModel);
+        newTaskDialog.ShowDialog();
     }
 }

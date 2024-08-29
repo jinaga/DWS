@@ -21,5 +21,11 @@ namespace DWS.Console.Areas.Tasks
             viewModel.Load();
             base.OnActivated(e);
         }
+
+        protected override void OnDeactivated(EventArgs e)
+        {
+            viewModel.Unload();
+            base.OnDeactivated(e);
+        }
     }
 }

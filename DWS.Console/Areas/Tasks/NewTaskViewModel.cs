@@ -7,6 +7,8 @@ public partial class NewTaskViewModel(JinagaClient jinagaClient, Supplier suppli
 {
     public ObservableCollection<YardViewModel> Yards { get; } = [];
 
+    private IObserver? observer;
+
     public void Load()
     {
         var yardsInSupplier = Given<Supplier>.Match((supplier, facts) =>
@@ -29,7 +31,7 @@ public partial class NewTaskViewModel(JinagaClient jinagaClient, Supplier suppli
           }
         );
 
-        jinagaClient.Watch(yardsInSupplier, supplier, yardProjection =>
+        observer = jinagaClient.Watch(yardsInSupplier, supplier, yardProjection =>
         {
             YardViewModel yard = new YardViewModel();
             Yards.Add(yard);
@@ -55,5 +57,11 @@ public partial class NewTaskViewModel(JinagaClient jinagaClient, Supplier suppli
 
             return () => Yards.Remove(yard);
         });
+    }
+
+    public void Unload()
+    {
+        observer?.Stop();
+        observer = null;
     }
 }

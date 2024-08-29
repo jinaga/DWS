@@ -38,7 +38,9 @@
 
                 <Label Grid.Column="0" Content="Name" />
                 <ComboBox Grid.Column="1" ItemsSource="{Binding Yards}"
-                          ItemTemplate="{StaticResource YardTemplate}">
+                          ItemTemplate="{StaticResource YardTemplate}"
+                          IsEditable="True"
+                          Text="{Binding ClientName}">
                 </ComboBox>
             </Grid>
         </GroupBox>

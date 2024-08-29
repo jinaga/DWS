@@ -22,4 +22,6 @@ public partial class YardViewModel : ObservableObject
 
     [ObservableProperty]
     private string country = string.Empty;
+
+    public override string ToString() => ClientName;
 }

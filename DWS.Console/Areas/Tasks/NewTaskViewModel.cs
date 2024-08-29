@@ -9,6 +9,9 @@ public partial class NewTaskViewModel(JinagaClient jinagaClient, Supplier suppli
 
     private IObserver? observer;
 
+    [ObservableProperty]
+    private string clientName = string.Empty;
+
     public void Load()
     {
         if (observer != null)

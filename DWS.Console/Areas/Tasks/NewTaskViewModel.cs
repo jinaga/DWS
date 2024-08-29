@@ -3,11 +3,11 @@
 namespace DWS.Console.Areas.Tasks;
 
 
-public partial class NewTaskViewModel(JinagaClient jinagaClient) : ObservableObject
+public partial class NewTaskViewModel(JinagaClient jinagaClient, Supplier supplier) : ObservableObject
 {
     public ObservableCollection<YardViewModel> Yards { get; } = [];
 
-    public async Task Load()
+    public void Load()
     {
         var yardsInSupplier = Given<Supplier>.Match((supplier, facts) =>
           from client in facts.OfType<Client>()
@@ -29,7 +29,6 @@ public partial class NewTaskViewModel(JinagaClient jinagaClient) : ObservableObj
           }
         );
 
-        Supplier supplier = await JinagaConfig.CreateSampleData(jinagaClient);
         jinagaClient.Watch(yardsInSupplier, supplier, yardProjection =>
         {
             YardViewModel yard = new YardViewModel();

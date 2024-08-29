@@ -21,9 +21,11 @@ public partial class MainWindow : Window
         InitializeComponent();
     }
 
-    private void NewTask_Click(object sender, RoutedEventArgs e)
+    private async void NewTask_Click(object sender, RoutedEventArgs e)
     {
-        var viewModel = new NewTaskViewModel(JinagaConfig.Client);
+        var client = JinagaConfig.Client;
+        var supplier = await JinagaConfig.CreateSampleData(client);
+        var viewModel = new NewTaskViewModel(client, supplier);
         var newTaskDialog = new NewTaskDialog(viewModel);
         newTaskDialog.ShowDialog();
     }

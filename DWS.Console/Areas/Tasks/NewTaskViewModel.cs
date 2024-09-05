@@ -108,6 +108,7 @@ public partial class NewTaskViewModel : ObservableObject
         var task = await jinagaClient.Fact(new DWSTask(SelectedYard.Yard, Guid.NewGuid()));
 
         // Set the properties of the task
+        await jinagaClient.Fact(new TaskClientName(task, ClientName, []));
         await jinagaClient.Fact(new TaskYardName(task, YardName, []));
     }
 }

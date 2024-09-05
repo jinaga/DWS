@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DWS.Console.Areas.Tasks"
         mc:Ignorable="d"
-        Title="NewTaskDialog" Height="450" Width="800">
+        Title="NewTaskDialog" Height="Auto" Width="800">
     <Window.Resources>
         <DataTemplate x:Key="YardTemplate" DataType="{x:Type local:YardViewModel}">
             <Grid>
@@ -27,22 +27,92 @@
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <GroupBox Grid.Row="0" Header="Client" Padding="10">
+        <GroupBox Grid.Row="0" Header="Client">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <Label Grid.Column="0" Content="Name" />
-                <ComboBox Grid.Column="1" ItemsSource="{Binding Yards}"
+                <Label Grid.Column="0" Margin="10" Content="Name" />
+                <ComboBox Grid.Column="1" Margin="10" ItemsSource="{Binding Yards}"
                           ItemTemplate="{StaticResource YardTemplate}"
                           IsEditable="True"
                           Text="{Binding ClientName}">
                 </ComboBox>
             </Grid>
         </GroupBox>
+
+        <GroupBox Grid.Row="1" Header="Location" Padding="10">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Row="0" Grid.Column="0" Margin="10" Content="Street" />
+                <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Margin="10" Text="{Binding Street}" />
+                <Label Grid.Row="0" Grid.Column="4" Margin="10" Content="Number" />
+                <TextBox Grid.Row="0" Grid.Column="5" Margin="10" Text="{Binding Number}" />
+
+                <Label Grid.Row="1" Grid.Column="0"  Margin="10" Content="Postal Code" />
+                <TextBox Grid.Row="1" Grid.Column="1" Margin="10" Text="{Binding PostalCode}" />
+                <Label Grid.Row="1" Grid.Column="2" Margin="10" Content="City" />
+                <TextBox Grid.Row="1" Grid.Column="3" Margin="10" Text="{Binding City}" />
+                <Label Grid.Row="1" Grid.Column="4" Margin="10" Content="Country" />
+                <TextBox Grid.Row="1" Grid.Column="5" Margin="10" Text="{Binding Country}" />
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Grid.Row="2" Header="Task">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="8*" />
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Column="0" Margin="10" Content="Description" />
+                <TextBox Grid.Column="1" Margin="10" Grid.ColumnSpan="4" Text="{Binding Description}" />
+
+                <Label Grid.Row="1" Grid.Column="0" Margin="10" Content="Start Date and Time" />
+                <DatePicker Grid.Row="1" Grid.Column="1" Margin="10" SelectedDate="{Binding StartDate}" />
+                <TextBox Grid.Row="1" Grid.Column="2" Margin="10,10,0,10" Text="{Binding StartTimeHour}" />
+                <Label Grid.Row="1" Grid.Column="3" Margin="0,10" Content=":" />
+                <TextBox Grid.Row="1" Grid.Column="4" Margin="0,10,10,10" Text="{Binding StartTimeMinute}" />
+
+                <Label Grid.Row="2" Grid.Column="0" Margin="10" Content="Notes" />
+                <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4" Margin="10" Text="{Binding Notes}" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
+
+                <Label Grid.Row="3" Grid.Column="0" Margin="10" Content="Worker" />
+                <ComboBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" Margin="10" ItemsSource="{Binding Workers}" />
+            </Grid>
+        </GroupBox>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal">
+            <Button Margin="10" Padding="5,0" Content="Save" Command="{Binding SaveCommand}" IsDefault="True" />
+            <Button Margin="10" Padding="5,0" Content="Cancel" Command="{Binding CancelCommand}" IsCancel="True" />
+        </StackPanel>
     </Grid>
 </Window>

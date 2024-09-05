@@ -27,11 +27,7 @@ public partial class NewTaskViewModel : ObservableObject
     {
         this.jinagaClient = jinagaClient;
         this.supplier = supplier;
-
-        SaveCommand = new AsyncRelayCommand(HandleSave);
     }
-
-    public ICommand SaveCommand { get; }
 
     public void Load()
     {
@@ -101,7 +97,7 @@ public partial class NewTaskViewModel : ObservableObject
         YardName = value?.YardName ?? string.Empty;
     }
 
-    private async Task HandleSave()
+    public async Task Save()
     {
         if (SelectedYard == null)
         {
@@ -109,6 +105,9 @@ public partial class NewTaskViewModel : ObservableObject
         }
 
         // Create the task
-        await jinagaClient.Fact(new DWSTask(SelectedYard.Yard, Guid.NewGuid()));
+        var task = await jinagaClient.Fact(new DWSTask(SelectedYard.Yard, Guid.NewGuid()));
+
+        // Set the properties of the task
+        await jinagaClient.Fact(new TaskYardName(task, YardName, []));
     }
 }

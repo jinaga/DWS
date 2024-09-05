@@ -28,8 +28,9 @@ namespace DWS.Console.Areas.Tasks
             base.OnClosed(e);
         }
 
-        private void Save_Click(object sender, RoutedEventArgs e)
+        private async void Save_Click(object sender, RoutedEventArgs e)
         {
+            await viewModel.Save();
             DialogResult = true;
         }
     }

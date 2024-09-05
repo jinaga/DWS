@@ -143,7 +143,7 @@
         </GroupBox>
 
         <StackPanel Grid.Row="4" Orientation="Horizontal">
-            <Button Margin="10" Padding="5,0" Content="Save" Command="{Binding SaveCommand}" IsDefault="True" Click="Save_Click" />
+            <Button Margin="10" Padding="5,0" Content="Save" IsDefault="True" Click="Save_Click" />
             <Button Margin="10" Padding="5,0" Content="Cancel" Command="{Binding CancelCommand}" IsCancel="True" />
         </StackPanel>
     </Grid>

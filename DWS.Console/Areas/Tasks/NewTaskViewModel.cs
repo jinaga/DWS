@@ -18,6 +18,9 @@ public partial class NewTaskViewModel : ObservableObject
     private string clientName = string.Empty;
 
     [ObservableProperty]
+    private string yardName = string.Empty;
+
+    [ObservableProperty]
     private YardViewModel? selectedYard;
 
     public NewTaskViewModel(JinagaClient jinagaClient, Supplier supplier)
@@ -91,6 +94,11 @@ public partial class NewTaskViewModel : ObservableObject
         observer?.Stop();
         observer = null;
         Yards.Clear();
+    }
+
+    partial void OnSelectedYardChanged(YardViewModel? value)
+    {
+        YardName = value?.YardName ?? string.Empty;
     }
 
     private async Task HandleSave()

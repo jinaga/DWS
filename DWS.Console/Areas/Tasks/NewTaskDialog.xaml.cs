@@ -16,16 +16,16 @@ namespace DWS.Console.Areas.Tasks
             InitializeComponent();
         }
 
-        protected override void OnActivated(EventArgs e)
+        protected override void OnInitialized(EventArgs e)
         {
             viewModel.Load();
-            base.OnActivated(e);
+            base.OnInitialized(e);
         }
 
-        protected override void OnDeactivated(EventArgs e)
+        protected override void OnClosed(EventArgs e)
         {
             viewModel.Unload();
-            base.OnDeactivated(e);
+            base.OnClosed(e);
         }
 
         private void Save_Click(object sender, RoutedEventArgs e)

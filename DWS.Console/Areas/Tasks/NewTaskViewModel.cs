@@ -1,16 +1,34 @@
-﻿using DWS.Model;
+﻿using CommunityToolkit.Mvvm.Input;
+using DWS.Model;
+using System.Windows.Input;
 
 namespace DWS.Console.Areas.Tasks;
 
 
-public partial class NewTaskViewModel(JinagaClient jinagaClient, Supplier supplier) : ObservableObject
+public partial class NewTaskViewModel : ObservableObject
 {
+    private readonly JinagaClient jinagaClient;
+    private readonly Supplier supplier;
+
     public ObservableCollection<YardViewModel> Yards { get; } = [];
 
     private IObserver? observer;
 
     [ObservableProperty]
     private string clientName = string.Empty;
+
+    [ObservableProperty]
+    private YardViewModel? selectedYard;
+
+    public NewTaskViewModel(JinagaClient jinagaClient, Supplier supplier)
+    {
+        this.jinagaClient = jinagaClient;
+        this.supplier = supplier;
+
+        SaveCommand = new AsyncRelayCommand(HandleSave);
+    }
+
+    public ICommand SaveCommand { get; }
 
     public void Load()
     {
@@ -26,6 +44,7 @@ public partial class NewTaskViewModel(JinagaClient jinagaClient, Supplier suppli
           where yard.client == client && !yard.IsDeleted
           select new
           {
+              yard = yard,
               clientNames = facts.Observable(client.Names.Select(name => name.value)),
               yardNames = facts.Observable(yard.Names.Select(name => name.value)),
               yardAddresses = facts.Observable(yard.Addresses.Select(address => new
@@ -41,7 +60,7 @@ public partial class NewTaskViewModel(JinagaClient jinagaClient, Supplier suppli
 
         observer = jinagaClient.Watch(yardsInSupplier, supplier, yardProjection =>
         {
-            YardViewModel yard = new YardViewModel();
+            YardViewModel yard = new YardViewModel(yardProjection.yard);
             Yards.Add(yard);
 
             yardProjection.clientNames.OnAdded(name =>
@@ -72,5 +91,16 @@ public partial class NewTaskViewModel(JinagaClient jinagaClient, Supplier suppli
         observer?.Stop();
         observer = null;
         Yards.Clear();
+    }
+
+    private async Task HandleSave()
+    {
+        if (SelectedYard == null)
+        {
+            return;
+        }
+
+        // Create the task
+        await jinagaClient.Fact(new DWSTask(SelectedYard.Yard, Guid.NewGuid()));
     }
 }

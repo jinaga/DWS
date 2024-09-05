@@ -48,7 +48,8 @@
                 <ComboBox Grid.Column="1" Margin="10" ItemsSource="{Binding Yards}"
                           ItemTemplate="{StaticResource YardTemplate}"
                           IsEditable="True"
-                          Text="{Binding ClientName}">
+                          Text="{Binding ClientName}"
+                          SelectedItem="{Binding SelectedYard}">
                 </ComboBox>
             </Grid>
         </GroupBox>

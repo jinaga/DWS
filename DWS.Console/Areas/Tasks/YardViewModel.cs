@@ -1,7 +1,14 @@
-﻿namespace DWS.Console.Areas.Tasks;
+﻿using DWS.Model;
+
+namespace DWS.Console.Areas.Tasks;
 
 public partial class YardViewModel : ObservableObject
 {
+    public YardViewModel(Yard yard)
+    {
+        Yard = yard;
+    }
+
     [ObservableProperty]
     private string clientName = string.Empty;
 
@@ -22,6 +29,8 @@ public partial class YardViewModel : ObservableObject
 
     [ObservableProperty]
     private string country = string.Empty;
+
+    public Yard Yard { get; }
 
     public override string ToString() => ClientName;
 }

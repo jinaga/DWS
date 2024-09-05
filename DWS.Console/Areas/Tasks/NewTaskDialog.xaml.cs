@@ -27,5 +27,10 @@ namespace DWS.Console.Areas.Tasks
             viewModel.Unload();
             base.OnDeactivated(e);
         }
+
+        private void Save_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
+        }
     }
 }

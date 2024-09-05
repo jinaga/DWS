@@ -33,6 +33,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
@@ -117,7 +118,30 @@
             </Grid>
         </GroupBox>
 
-        <StackPanel Grid.Row="3" Orientation="Horizontal">
+        <GroupBox Grid.Row="3" Header="Tools">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <ListBox Name="ToolsListBox"   Height="80" Grid.Column="0" Margin="10" ScrollViewer.VerticalScrollBarVisibility="Visible" >
+                    <ListBoxItem Content="Truck 50T"></ListBoxItem>
+                    <ListBoxItem Content="Spade"></ListBoxItem>
+                    <ListBoxItem Content="Lawn mower"></ListBoxItem>
+                    <ListBoxItem Content="GPS equipment"></ListBoxItem>
+                    <ListBoxItem Content="Brochures"></ListBoxItem>
+                </ListBox>
+
+                <Button Grid.Column="1" Margin="10" Padding="5,0" Height="20" Content="Delete" Command="{Binding DeleteToolCommand}" />
+
+            </Grid>
+        </GroupBox>
+
+        <StackPanel Grid.Row="4" Orientation="Horizontal">
             <Button Margin="10" Padding="5,0" Content="Save" Command="{Binding SaveCommand}" IsDefault="True" />
             <Button Margin="10" Padding="5,0" Content="Cancel" Command="{Binding CancelCommand}" IsCancel="True" />
         </StackPanel>

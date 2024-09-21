@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using DWS.Console.Asynchronous;
+using Notifications.Wpf;
+using System.Windows;
 
 namespace DWS.Console.Areas.Tasks
 {
@@ -8,10 +10,12 @@ namespace DWS.Console.Areas.Tasks
     public partial class NewTaskDialog : Window
     {
         private readonly NewTaskViewModel viewModel;
+        private readonly CommandProcessor commandProcessor;
 
-        public NewTaskDialog(NewTaskViewModel viewModel)
+        public NewTaskDialog(NewTaskViewModel viewModel, CommandProcessor commandProcessor)
         {
             this.viewModel = viewModel;
+            this.commandProcessor = commandProcessor;
             DataContext = viewModel;
             InitializeComponent();
         }
@@ -28,10 +32,15 @@ namespace DWS.Console.Areas.Tasks
             base.OnClosed(e);
         }
 
-        private async void Save_Click(object sender, RoutedEventArgs e)
+        private void Save_Click(object sender, RoutedEventArgs e)
         {
-            await viewModel.Save();
-            DialogResult = true;
+            commandProcessor.Run(async () =>
+            {
+                await Task.Delay(400);
+                throw new Exception("Test exception");
+                //await viewModel.Save();
+                //DialogResult = true;
+            });
         }
     }
 }

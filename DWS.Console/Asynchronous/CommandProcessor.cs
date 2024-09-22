@@ -11,20 +11,19 @@ public class CommandProcessor
         this.notificationManager = notificationManager;
     }
 
-    public async void Run(Func<Task> handle)
+    public void Run(Func<Task> handle)
     {
-        try
+        handle().ContinueWith(t =>
         {
-            await handle();
-        }
-        catch (Exception ex)
-        {
-            notificationManager.Show(new NotificationContent
+            if (t.IsFaulted)
             {
-                Title = "Error while saving",
-                Message = ex.Message,
-                Type = NotificationType.Error
-            });
-        }
+                notificationManager.Show(new NotificationContent
+                {
+                    Title = "Error while saving",
+                    Message = t.Exception?.Message,
+                    Type = NotificationType.Error
+                });
+            }
+        }, TaskScheduler.FromCurrentSynchronizationContext());
     }
 }

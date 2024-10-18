@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using DWS.Model;
+using System.Diagnostics.Metrics;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace DWS.Console.Areas.Tasks;
@@ -22,6 +24,14 @@ public partial class NewTaskViewModel : ObservableObject
 
     [ObservableProperty]
     private YardViewModel? selectedYard;
+
+    public ObservableCollection<string> Tools { get; } = [
+        "Truck 50T",
+        "Spade",
+        "Lawn mower",
+        "GPS equipment",
+        "Brochures"
+    ];
 
     public NewTaskViewModel(JinagaClient jinagaClient, Supplier supplier)
     {

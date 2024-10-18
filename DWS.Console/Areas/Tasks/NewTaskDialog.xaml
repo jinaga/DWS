@@ -129,13 +129,11 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <ListBox Name="ToolsListBox"   Height="80" Grid.Column="0" Margin="10" ScrollViewer.VerticalScrollBarVisibility="Visible" >
-                    <ListBoxItem Content="Truck 50T"></ListBoxItem>
-                    <ListBoxItem Content="Spade"></ListBoxItem>
-                    <ListBoxItem Content="Lawn mower"></ListBoxItem>
-                    <ListBoxItem Content="GPS equipment"></ListBoxItem>
-                    <ListBoxItem Content="Brochures"></ListBoxItem>
-                </ListBox>
+                <DataGrid Name="ToolsDataGrid" Grid.Column="0" Margin="10" ItemsSource="{Binding Tools}" AutoGenerateColumns="False" >
+                    <DataGrid.Columns>
+                        <DataGridComboBoxColumn Header="Tool" ItemsSource="{Binding ToolCatalog}" />
+                    </DataGrid.Columns>
+                </DataGrid>
 
                 <Button Grid.Column="1" Margin="10" Padding="5,0" Height="20" Content="Delete" Command="{Binding DeleteToolCommand}" />
 

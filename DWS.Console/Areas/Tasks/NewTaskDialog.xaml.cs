@@ -36,10 +36,8 @@ namespace DWS.Console.Areas.Tasks
         {
             commandProcessor.Run(async () =>
             {
-                await Task.Delay(400);
-                throw new Exception("Test exception");
-                //await viewModel.Save();
-                //DialogResult = true;
+                await viewModel.Save();
+                DialogResult = true;
             });
         }
     }

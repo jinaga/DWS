@@ -21,6 +21,29 @@ static class JinagaConfig
             return supplier;
         });
 
+        await CreateSampleTools(jinagaClient, supplier);
+        await CreateSampleCilents(jinagaClient, supplier);
+
+        return supplier;
+    }
+
+    private static async Task CreateSampleTools(JinagaClient jinagaClient, Supplier supplier)
+    {
+        await CreateTool("Truck 50T");
+        await CreateTool("Spade");
+        await CreateTool("Lawn mower");
+        await CreateTool("GPS equipment");
+        await CreateTool("Brochures");
+
+        async Task CreateTool(string name)
+        {
+            var tool = await jinagaClient.Fact(new Tool(supplier, Guid.NewGuid()));
+            await jinagaClient.Fact(new ToolName(tool, name, []));
+        }
+    }
+
+    private static async Task CreateSampleCilents(JinagaClient jinagaClient, Supplier supplier)
+    {
         var clientA = await jinagaClient.Fact(new Client(supplier, Guid.NewGuid()));
         await jinagaClient.Fact(new ClientName(clientA, "Client A", []));
         var yardA1 = await jinagaClient.Fact(new Yard(clientA, Guid.NewGuid()));
@@ -56,7 +79,5 @@ static class JinagaConfig
             "Another Town",
             "USA",
             []));
-
-        return supplier;
     }
 }

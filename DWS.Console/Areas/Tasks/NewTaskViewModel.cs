@@ -1,8 +1,4 @@
-﻿using CommunityToolkit.Mvvm.Input;
-using DWS.Model;
-using System.Diagnostics.Metrics;
-using System.Windows.Controls;
-using System.Windows.Input;
+﻿using DWS.Model;
 
 namespace DWS.Console.Areas.Tasks;
 
@@ -13,8 +9,11 @@ public partial class NewTaskViewModel : ObservableObject
     private readonly Supplier supplier;
 
     public ObservableCollection<YardViewModel> Yards { get; } = [];
+    public ObservableCollection<ToolViewModel> ToolCatalog { get; } = [];
+    public ObservableCollection<TaskToolViewModel> Tools { get; } = [];
 
-    private IObserver? observer;
+    private IObserver? yardObserver;
+    private IObserver? toolObserver;
 
     [ObservableProperty]
     private string clientName = string.Empty;
@@ -25,14 +24,6 @@ public partial class NewTaskViewModel : ObservableObject
     [ObservableProperty]
     private YardViewModel? selectedYard;
 
-    public ObservableCollection<string> Tools { get; } = [
-        "Truck 50T",
-        "Spade",
-        "Lawn mower",
-        "GPS equipment",
-        "Brochures"
-    ];
-
     public NewTaskViewModel(JinagaClient jinagaClient, Supplier supplier)
     {
         this.jinagaClient = jinagaClient;
@@ -41,7 +32,7 @@ public partial class NewTaskViewModel : ObservableObject
 
     public void Load()
     {
-        if (observer != null)
+        if (yardObserver != null)
         {
             return;
         }
@@ -67,7 +58,7 @@ public partial class NewTaskViewModel : ObservableObject
           }
         );
 
-        observer = jinagaClient.Watch(yardsInSupplier, supplier, yardProjection =>
+        yardObserver = jinagaClient.Watch(yardsInSupplier, supplier, yardProjection =>
         {
             YardViewModel yard = new YardViewModel(yardProjection.yard);
             Yards.Add(yard);
@@ -93,13 +84,40 @@ public partial class NewTaskViewModel : ObservableObject
 
             return () => Yards.Remove(yard);
         });
+
+        var toolsInSupplier = Given<Supplier>.Match((supplier, facts) =>
+          from tool in facts.OfType<Tool>()
+          where tool.supplier == supplier && !tool.IsDeleted
+          select new
+          {
+              tool = tool,
+              toolNames = facts.Observable(tool.Names.Select(name => name.value))
+          }
+        );
+
+        toolObserver = jinagaClient.Watch(toolsInSupplier, supplier, toolProjection =>
+        {
+            ToolViewModel tool = new ToolViewModel(toolProjection.tool);
+            ToolCatalog.Add(tool);
+
+            toolProjection.toolNames.OnAdded(name =>
+            {
+                tool.Name = name;
+            });
+
+            return () => ToolCatalog.Remove(tool);
+        });
     }
 
     public void Unload()
     {
-        observer?.Stop();
-        observer = null;
+        yardObserver?.Stop();
+        yardObserver = null;
         Yards.Clear();
+
+        toolObserver?.Stop();
+        toolObserver = null;
+        ToolCatalog.Clear();
     }
 
     partial void OnSelectedYardChanged(YardViewModel? value)

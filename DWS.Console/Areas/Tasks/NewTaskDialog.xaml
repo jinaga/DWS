@@ -1,4 +1,4 @@
-﻿<Window x:Class="DWS.Console.Areas.Tasks.NewTaskDialog"
+<Window x:Class="DWS.Console.Areas.Tasks.NewTaskDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -27,6 +27,7 @@
                 <TextBlock Text="{Binding Country}" Grid.Column="6" Margin="5"/>
             </Grid>
         </DataTemplate>
+        <CollectionViewSource x:Key="ToolCatalog" Source="{Binding ToolCatalog}" />
     </Window.Resources>
     <Grid Margin="10">
         <Grid.RowDefinitions>
@@ -129,9 +130,22 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <DataGrid Name="ToolsDataGrid" Grid.Column="0" Margin="10" ItemsSource="{Binding Tools}" AutoGenerateColumns="False" >
+                <DataGrid
+                    Name="ToolsDataGrid"
+                    Grid.Column="0"
+                    Margin="10"
+                    Height="150"
+                    ItemsSource="{Binding Tools}"
+                    AutoGenerateColumns="False"
+                    CanUserAddRows="True" >
                     <DataGrid.Columns>
-                        <DataGridComboBoxColumn Header="Tool" ItemsSource="{Binding ToolCatalog}" />
+                        <DataGridComboBoxColumn
+                            Width="400"
+                            Header="Tool"
+                            ItemsSource="{Binding Source={StaticResource ToolCatalog}}"
+                            DisplayMemberPath="Name"
+                            IsReadOnly="False"
+                        />
                     </DataGrid.Columns>
                 </DataGrid>
 

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DWS.Console.Areas.Tasks"
         mc:Ignorable="d"
-        Title="NewTaskDialog" Height="Auto" Width="800">
+        Title="NewTaskDialog" MinHeight="750" Height="Auto" Width="800">
     <Window.Resources>
         <DataTemplate x:Key="YardTemplate" DataType="{x:Type local:YardViewModel}">
             <Grid>
@@ -146,8 +146,15 @@
                             DisplayMemberPath="Name"
                             SelectedValuePath="Tool"
                             SelectedValueBinding="{Binding Tool}"
-                            IsReadOnly="False"
-                        />
+                            TextBinding="{Binding Name}"
+                            IsReadOnly="False" >
+                            <DataGridComboBoxColumn.EditingElementStyle>
+                                <Style TargetType="ComboBox">
+                                    <Setter Property="IsEditable" Value="True"/>
+                                    <Setter Property="IsReadOnly" Value="False"/>
+                                </Style>
+                            </DataGridComboBoxColumn.EditingElementStyle>
+                        </DataGridComboBoxColumn>
                     </DataGrid.Columns>
                 </DataGrid>
 

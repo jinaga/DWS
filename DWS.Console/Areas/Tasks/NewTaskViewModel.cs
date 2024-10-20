@@ -138,5 +138,18 @@ public partial class NewTaskViewModel : ObservableObject
         // Set the properties of the task
         await jinagaClient.Fact(new TaskClientName(task, ClientName, []));
         await jinagaClient.Fact(new TaskYardName(task, YardName, []));
+
+        // Add the tools
+        foreach (var taskToolViewModel in Tools)
+        {
+            if (taskToolViewModel.Tool != null)
+            {
+                await jinagaClient.Fact(new TaskToolLookup(task, taskToolViewModel.Tool, DateTime.UtcNow));
+            }
+            else
+            {
+                await jinagaClient.Fact(new TaskToolOnTheFly(task, taskToolViewModel.Name, DateTime.UtcNow));
+            }
+        }
     }
 }

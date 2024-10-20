@@ -139,22 +139,30 @@
                     AutoGenerateColumns="False"
                     CanUserAddRows="True" >
                     <DataGrid.Columns>
-                        <DataGridComboBoxColumn
-                            Width="400"
-                            Header="Tool"
-                            ItemsSource="{Binding Source={StaticResource ToolCatalog}}"
-                            DisplayMemberPath="Name"
-                            SelectedValuePath="Tool"
-                            SelectedValueBinding="{Binding Tool}"
-                            TextBinding="{Binding Name}"
-                            IsReadOnly="False" >
-                            <DataGridComboBoxColumn.EditingElementStyle>
-                                <Style TargetType="ComboBox">
-                                    <Setter Property="IsEditable" Value="True"/>
-                                    <Setter Property="IsReadOnly" Value="False"/>
-                                </Style>
-                            </DataGridComboBoxColumn.EditingElementStyle>
-                        </DataGridComboBoxColumn>
+                        <DataGridTemplateColumn Header="Tool" Width="400">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                            <DataGridTemplateColumn.CellEditingTemplate>
+                                <DataTemplate>
+                                    <Grid
+                                        FocusManager.IsFocusScope="True"
+                                        FocusManager.FocusedElement="{Binding ElementName=ToolComboBox}">
+                                        <ComboBox
+                                            x:Name="ToolComboBox"
+                                            IsEditable="True"
+                                            ItemsSource="{Binding Source={StaticResource ToolCatalog}}"
+                                            DisplayMemberPath="Name"
+                                            SelectedValuePath="Tool"
+                                            SelectedValue="{Binding Tool}"
+                                            Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellEditingTemplate>
+                        </DataGridTemplateColumn>
+
                     </DataGrid.Columns>
                 </DataGrid>
 

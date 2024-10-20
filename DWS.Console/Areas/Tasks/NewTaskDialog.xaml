@@ -144,6 +144,8 @@
                             Header="Tool"
                             ItemsSource="{Binding Source={StaticResource ToolCatalog}}"
                             DisplayMemberPath="Name"
+                            SelectedValuePath="Tool"
+                            SelectedValueBinding="{Binding Tool}"
                             IsReadOnly="False"
                         />
                     </DataGrid.Columns>

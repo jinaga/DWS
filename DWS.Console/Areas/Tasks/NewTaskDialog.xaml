@@ -157,7 +157,9 @@
                                             DisplayMemberPath="Name"
                                             SelectedValuePath="Tool"
                                             SelectedValue="{Binding Tool}"
-                                            Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            IsTextSearchEnabled="True"
+                                            IsTextSearchCaseSensitive="False" />
                                     </Grid>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellEditingTemplate>

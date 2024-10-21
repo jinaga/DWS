@@ -156,7 +156,7 @@
                                             ItemsSource="{Binding Source={StaticResource ToolCatalog}}"
                                             DisplayMemberPath="Name"
                                             SelectedValuePath="Tool"
-                                            SelectedValue="{Binding Tool}"
+                                            SelectedValue="{Binding Tool, Mode=TwoWay}"
                                             Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                             IsTextSearchEnabled="True"
                                             IsTextSearchCaseSensitive="False" />

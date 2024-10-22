@@ -165,3 +165,32 @@ To solve this problem, the combo box is wrapped in a container that applies the 
 ### Sorting the Tool Catalog
 
 The `ToolCatalog` observable collection in the `NewTaskViewModel` is sorted alphabetically by tool name. To accomplish this, the `NewTaskViewModel` moves each `ToolViewModel` to the correct place when the name changes. It uses a binary search to find the new insertion point.
+
+## Unit Tests
+
+### NewTaskViewModel Tests
+
+The `NewTaskViewModel` class has been tested to ensure that it correctly loads and unloads tools and yards from the supplier. The following tests have been added:
+
+- `LoadTools_ShouldLoadToolsFromSupplier`: Verifies that the `LoadTools` method correctly loads tools from the supplier.
+- `LoadYards_ShouldLoadYardsFromSupplier`: Verifies that the `LoadYards` method correctly loads yards from the supplier.
+- `UnloadTools_ShouldClearTools`: Verifies that the `UnloadTools` method correctly clears the tools.
+- `UnloadYards_ShouldClearYards`: Verifies that the `UnloadYards` method correctly clears the yards.
+
+### ToolViewModel Tests
+
+The `ToolViewModel` class has been tested to ensure that it correctly sets the tool name. The following test has been added:
+
+- `ToolViewModel_ShouldSetName`: Verifies that the `ToolViewModel` correctly sets the tool name.
+
+### YardViewModel Tests
+
+The `YardViewModel` class has been tested to ensure that it correctly sets the yard properties. The following tests have been added:
+
+- `YardViewModel_ShouldSetClientName`: Verifies that the `YardViewModel` correctly sets the client name.
+- `YardViewModel_ShouldSetYardName`: Verifies that the `YardViewModel` correctly sets the yard name.
+- `YardViewModel_ShouldSetStreet`: Verifies that the `YardViewModel` correctly sets the street.
+- `YardViewModel_ShouldSetNumber`: Verifies that the `YardViewModel` correctly sets the number.
+- `YardViewModel_ShouldSetPostalCode`: Verifies that the `YardViewModel` correctly sets the postal code.
+- `YardViewModel_ShouldSetCity`: Verifies that the `YardViewModel` correctly sets the city.
+- `YardViewModel_ShouldSetCountry`: Verifies that the `YardViewModel` correctly sets the country.

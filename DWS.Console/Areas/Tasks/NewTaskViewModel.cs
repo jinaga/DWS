@@ -37,6 +37,18 @@ public partial class NewTaskViewModel : ObservableObject
             return;
         }
 
+        LoadYards();
+        LoadTools();
+    }
+
+    public void Unload()
+    {
+        UnloadYards();
+        UnloadTools();
+    }
+
+    private void LoadYards()
+    {
         var yardsInSupplier = Given<Supplier>.Match((supplier, facts) =>
           from client in facts.OfType<Client>()
           where client.supplier == supplier
@@ -84,7 +96,10 @@ public partial class NewTaskViewModel : ObservableObject
 
             return () => Yards.Remove(yard);
         });
+    }
 
+    private void LoadTools()
+    {
         var toolsInSupplier = Given<Supplier>.Match((supplier, facts) =>
           from tool in facts.OfType<Tool>()
           where tool.supplier == supplier && !tool.IsDeleted
@@ -115,6 +130,20 @@ public partial class NewTaskViewModel : ObservableObject
         });
     }
 
+    private void UnloadYards()
+    {
+        yardObserver?.Stop();
+        yardObserver = null;
+        Yards.Clear();
+    }
+
+    private void UnloadTools()
+    {
+        toolObserver?.Stop();
+        toolObserver = null;
+        ToolCatalog.Clear();
+    }
+
     private int FindInsertionIndex(string toolName)
     {
         int low = 0;
@@ -140,17 +169,6 @@ public partial class NewTaskViewModel : ObservableObject
         }
 
         return low;
-    }
-
-    public void Unload()
-    {
-        yardObserver?.Stop();
-        yardObserver = null;
-        Yards.Clear();
-
-        toolObserver?.Stop();
-        toolObserver = null;
-        ToolCatalog.Clear();
     }
 
     partial void OnSelectedYardChanged(YardViewModel? value)

@@ -161,3 +161,7 @@ To solve this problem, the combo box is wrapped in a container that applies the 
     </DataTemplate>
 </DataGridTemplateColumn.CellEditingTemplate>
 ```
+
+### Sorting the Tool Catalog
+
+The `ToolCatalog` observable collection in the `NewTaskViewModel` is sorted alphabetically by tool name. To accomplish this, the `NewTaskViewModel` moves each `ToolViewModel` to the correct place when the name changes. It uses a binary search to find the new insertion point.

@@ -98,15 +98,48 @@ public partial class NewTaskViewModel : ObservableObject
         toolObserver = jinagaClient.Watch(toolsInSupplier, supplier, toolProjection =>
         {
             ToolViewModel tool = new ToolViewModel(toolProjection.tool);
-            ToolCatalog.Add(tool);
+            ToolCatalog.Insert(0, tool);
 
             toolProjection.toolNames.OnAdded(name =>
             {
                 tool.Name = name;
+                int currentIndex = ToolCatalog.IndexOf(tool);
+                int newIndex = FindInsertionIndex(tool.Name);
+                if (currentIndex != newIndex)
+                {
+                    ToolCatalog.Move(currentIndex, newIndex);
+                }
             });
 
             return () => ToolCatalog.Remove(tool);
         });
+    }
+
+    private int FindInsertionIndex(string toolName)
+    {
+        int low = 0;
+        int high = ToolCatalog.Count - 1;
+
+        while (low <= high)
+        {
+            int mid = (low + high) / 2;
+            int comparison = string.Compare(toolName, ToolCatalog[mid].Name, StringComparison.OrdinalIgnoreCase);
+
+            if (comparison == 0)
+            {
+                return mid;
+            }
+            else if (comparison < 0)
+            {
+                high = mid - 1;
+            }
+            else
+            {
+                low = mid + 1;
+            }
+        }
+
+        return low;
     }
 
     public void Unload()

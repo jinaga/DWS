@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,5 +18,4 @@
   <ItemGroup>
     <ProjectReference Include="..\DWS.Model\DWS.Model.csproj" />
   </ItemGroup>
-
 </Project>

@@ -1,4 +1,5 @@
 using DWS.Console.Areas.Tasks;
+using DWS.Model;
 using Jinaga;
 using Moq;
 using Xunit;

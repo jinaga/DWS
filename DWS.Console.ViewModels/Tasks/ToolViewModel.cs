@@ -1,6 +1,6 @@
 ﻿using DWS.Model;
 
-namespace DWS.Console.Areas.Tasks;
+namespace DWS.Console.ViewModels.Tasks;
 
 public partial class ToolViewModel : ObservableObject
 {

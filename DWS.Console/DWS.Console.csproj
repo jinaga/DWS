@@ -10,12 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
-    <PackageReference Include="Jinaga" Version="1.0.0" />
     <PackageReference Include="Notification.WPF" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DWS.Model\DWS.Model.csproj" />
+    <ProjectReference Include="..\DWS.Console.ViewModels\DWS.Console.ViewModels.csproj" />
   </ItemGroup>
 </Project>

@@ -1,6 +1,7 @@
 ﻿using DWS.Console.Asynchronous;
 using Notifications.Wpf;
 using System.Windows;
+using DWS.Console.ViewModels.Tasks;
 
 namespace DWS.Console.Areas.Tasks
 {

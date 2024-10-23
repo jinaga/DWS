@@ -41,6 +41,14 @@ public partial class NewTaskViewModel : ObservableObject
         LoadTools();
     }
 
+    public Task Ready()
+    {
+        return Task.WhenAll(
+            yardObserver?.Loaded ?? Task.CompletedTask,
+            toolObserver?.Loaded ?? Task.CompletedTask
+        );
+    }
+
     public void Unload()
     {
         UnloadYards();

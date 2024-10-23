@@ -1,4 +1,4 @@
-using DWS.Console.Areas.Tasks;
+using DWS.Console.ViewModels.Tasks;
 using DWS.Model;
 using Jinaga;
 

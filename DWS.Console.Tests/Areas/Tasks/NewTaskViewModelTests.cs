@@ -1,106 +1,60 @@
 using DWS.Console.Areas.Tasks;
 using DWS.Model;
 using Jinaga;
-using Moq;
-using Xunit;
 
 namespace DWS.Console.Tests.Areas.Tasks
 {
     public class NewTaskViewModelTests
     {
-        private readonly Mock<JinagaClient> mockJinagaClient;
-        private readonly Mock<Supplier> mockSupplier;
-        private readonly NewTaskViewModel viewModel;
-
-        public NewTaskViewModelTests()
-        {
-            mockJinagaClient = new Mock<JinagaClient>();
-            mockSupplier = new Mock<Supplier>();
-            viewModel = new NewTaskViewModel(mockJinagaClient.Object, mockSupplier.Object);
-        }
-
         [Fact]
-        public void LoadTools_ShouldLoadToolsFromSupplier()
+        public async Task WhenNoTools_ToolListIsEmpty()
         {
-            // Arrange
-            var tools = new List<ToolViewModel>
-            {
-                new ToolViewModel(new Tool(mockSupplier.Object, Guid.NewGuid())) { Name = "Tool1" },
-                new ToolViewModel(new Tool(mockSupplier.Object, Guid.NewGuid())) { Name = "Tool2" }
-            };
+            var jinagaClient = JinagaClient.Create();
+            var supplier = await jinagaClient.Fact(new Supplier(new User("--- SUPPLIER CREATOR ---"), Guid.NewGuid()));
 
-            mockJinagaClient.Setup(client => client.Watch(It.IsAny<Specification<Supplier, ToolViewModel>>(), mockSupplier.Object, It.IsAny<Action<ToolViewModel>>()))
-                .Callback<Specification<Supplier, ToolViewModel>, Supplier, Action<ToolViewModel>>((spec, supplier, callback) =>
-                {
-                    foreach (var tool in tools)
-                    {
-                        callback(tool);
-                    }
-                });
+            var viewModel = new NewTaskViewModel(jinagaClient, supplier);
+            viewModel.Load();
+            await viewModel.Ready();
 
-            // Act
-            viewModel.LoadTools();
-
-            // Assert
-            Assert.Equal(2, viewModel.ToolCatalog.Count);
-            Assert.Contains(viewModel.ToolCatalog, t => t.Name == "Tool1");
-            Assert.Contains(viewModel.ToolCatalog, t => t.Name == "Tool2");
-        }
-
-        [Fact]
-        public void LoadYards_ShouldLoadYardsFromSupplier()
-        {
-            // Arrange
-            var yards = new List<YardViewModel>
-            {
-                new YardViewModel(new Yard(new Client(mockSupplier.Object, Guid.NewGuid()), Guid.NewGuid())) { YardName = "Yard1" },
-                new YardViewModel(new Yard(new Client(mockSupplier.Object, Guid.NewGuid()), Guid.NewGuid())) { YardName = "Yard2" }
-            };
-
-            mockJinagaClient.Setup(client => client.Watch(It.IsAny<Specification<Supplier, YardViewModel>>(), mockSupplier.Object, It.IsAny<Action<YardViewModel>>()))
-                .Callback<Specification<Supplier, YardViewModel>, Supplier, Action<YardViewModel>>((spec, supplier, callback) =>
-                {
-                    foreach (var yard in yards)
-                    {
-                        callback(yard);
-                    }
-                });
-
-            // Act
-            viewModel.LoadYards();
-
-            // Assert
-            Assert.Equal(2, viewModel.Yards.Count);
-            Assert.Contains(viewModel.Yards, y => y.YardName == "Yard1");
-            Assert.Contains(viewModel.Yards, y => y.YardName == "Yard2");
-        }
-
-        [Fact]
-        public void UnloadTools_ShouldClearTools()
-        {
-            // Arrange
-            viewModel.ToolCatalog.Add(new ToolViewModel(new Tool(mockSupplier.Object, Guid.NewGuid())) { Name = "Tool1" });
-            viewModel.ToolCatalog.Add(new ToolViewModel(new Tool(mockSupplier.Object, Guid.NewGuid())) { Name = "Tool2" });
-
-            // Act
-            viewModel.UnloadTools();
-
-            // Assert
             Assert.Empty(viewModel.ToolCatalog);
         }
 
         [Fact]
-        public void UnloadYards_ShouldClearYards()
+        public async Task WhenToolsExist_ToolListIsPopulated()
         {
-            // Arrange
-            viewModel.Yards.Add(new YardViewModel(new Yard(new Client(mockSupplier.Object, Guid.NewGuid()), Guid.NewGuid())) { YardName = "Yard1" });
-            viewModel.Yards.Add(new YardViewModel(new Yard(new Client(mockSupplier.Object, Guid.NewGuid()), Guid.NewGuid())) { YardName = "Yard2" });
+            var jinagaClient = JinagaClient.Create();
+            var supplier = await jinagaClient.Fact(new Supplier(new User("--- SUPPLIER CREATOR ---"), Guid.NewGuid()));
 
-            // Act
-            viewModel.UnloadYards();
+            var tool1 = await jinagaClient.Fact(new Tool(supplier, Guid.NewGuid()));
+            var tool2 = await jinagaClient.Fact(new Tool(supplier, Guid.NewGuid()));
 
-            // Assert
-            Assert.Empty(viewModel.Yards);
+            var viewModel = new NewTaskViewModel(jinagaClient, supplier);
+            viewModel.Load();
+            await viewModel.Ready();
+
+            Assert.Equal(2, viewModel.ToolCatalog.Count);
+            Assert.Contains(viewModel.ToolCatalog, t => t.Tool.toolGuid == tool1.toolGuid);
+            Assert.Contains(viewModel.ToolCatalog, t => t.Tool.toolGuid == tool2.toolGuid);
+        }
+
+        [Fact]
+        public async Task WhenYardsHaveNames_YardListHasNames()
+        {
+            var jinagaClient = JinagaClient.Create();
+            var supplier = await jinagaClient.Fact(new Supplier(new User("--- SUPPLIER CREATOR ---"), Guid.NewGuid()));
+
+            var yard1 = await jinagaClient.Fact(new Yard(new Client(supplier, Guid.NewGuid()), Guid.NewGuid()));
+            await jinagaClient.Fact(new YardName(yard1, "Yard 1", []));
+            var yard2 = await jinagaClient.Fact(new Yard(new Client(supplier, Guid.NewGuid()), Guid.NewGuid()));
+            await jinagaClient.Fact(new YardName(yard2, "Yard 2", []));
+
+            var viewModel = new NewTaskViewModel(jinagaClient, supplier);
+            viewModel.Load();
+            await viewModel.Ready();
+
+            Assert.Equal(2, viewModel.Yards.Count);
+            Assert.Contains(viewModel.Yards, y => y.Yard.yardGuid == yard1.yardGuid);
+            Assert.Contains(viewModel.Yards, y => y.Yard.yardGuid == yard2.yardGuid);
         }
     }
 }

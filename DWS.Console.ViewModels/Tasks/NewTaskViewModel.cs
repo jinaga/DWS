@@ -127,7 +127,7 @@ public partial class NewTaskViewModel : ObservableObject
             {
                 tool.Name = name;
                 int currentIndex = ToolCatalog.IndexOf(tool);
-                int newIndex = FindInsertionIndex(tool.Name);
+                int newIndex = FindInsertionIndex(currentIndex, tool.Name);
                 if (currentIndex != newIndex)
                 {
                     ToolCatalog.Move(currentIndex, newIndex);
@@ -152,31 +152,64 @@ public partial class NewTaskViewModel : ObservableObject
         ToolCatalog.Clear();
     }
 
-    private int FindInsertionIndex(string toolName)
+    private int FindInsertionIndex(int currentIndex, string toolName)
     {
-        int low = 0;
-        int high = ToolCatalog.Count - 1;
+        // The tool is currently at the currentIndex.
+        // That position might be out of order relative to its neighbors.
+        // The other positions are in order.
 
-        while (low <= high)
+        // Find the position in the list where the tool belongs.
+
+        int low = 0;
+        // Invariant: every tool before low has a name less than the tool name, ignoring currentIndex.
+
+        int high = ToolCatalog.Count;
+        // Invariant: every tool after or at high has a name greater than or equal to the tool name,
+        // ignoring currentIndex.
+
+        while (low < high)
         {
             int mid = (low + high) / 2;
-            int comparison = string.Compare(toolName, ToolCatalog[mid].Name, StringComparison.OrdinalIgnoreCase);
-
-            if (comparison == 0)
+            if (mid == currentIndex)
             {
-                return mid;
+                // Skip the current index.
+                mid = mid + 1;
+                if (mid == high)
+                {
+                    // The tool is in the correct position.
+                    low = mid;
+                    break;
+                }
             }
-            else if (comparison < 0)
+            // Invariant: low <= mid < high
+            if (low > mid || mid >= high)
             {
-                high = mid - 1;
+                throw new InvalidOperationException("Binary search invariant violated.");
+            }
+            int comparison = string.Compare(ToolCatalog[mid].Name, toolName, StringComparison.OrdinalIgnoreCase);
+
+            if (comparison >= 0)
+            {
+                high = mid;
+                // Invariant: every tool after or at high has a name greater than or equal to the tool name,
             }
             else
             {
                 low = mid + 1;
+                // Invariant: every tool before low has a name less than the tool name, ignoring currentIndex.
             }
         }
 
-        return low;
+        if (currentIndex < low)
+        {
+            // Move the tool to the end of the lower range.
+            return low - 1;
+        }
+        else
+        {
+            // Move the tool to the beginning of the higher range.
+            return low;
+        }
     }
 
     partial void OnSelectedYardChanged(YardViewModel? value)

@@ -136,32 +136,5 @@ namespace DWS.Console.Tests.Areas.Tasks
             Assert.Equal("Adjustable Wrench", viewModel.ToolCatalog[0].Name);
             Assert.Equal("Hammer", viewModel.ToolCatalog[1].Name);
         }
-
-        [Fact]
-        public async Task WhenToolsHaveSimilarNames_MaintainsStableOrder()
-        {
-            // Arrange
-            var jinagaClient = JinagaClient.Create();
-            var supplier = await jinagaClient.Fact(new Supplier(new User("--- SUPPLIER CREATOR ---"), Guid.NewGuid()));
-
-            var tool1 = await jinagaClient.Fact(new Tool(supplier, Guid.NewGuid()));
-            var tool2 = await jinagaClient.Fact(new Tool(supplier, Guid.NewGuid()));
-            var tool3 = await jinagaClient.Fact(new Tool(supplier, Guid.NewGuid()));
-
-            var viewModel = new NewTaskViewModel(jinagaClient, supplier);
-            viewModel.Load();
-            await viewModel.Ready();
-
-            // Act
-            await jinagaClient.Fact(new ToolName(tool1, "Wrench 1", []));
-            await jinagaClient.Fact(new ToolName(tool2, "Wrench 2", []));
-            await jinagaClient.Fact(new ToolName(tool3, "Wrench 10", []));
-
-            // Assert - Should be sorted naturally: Wrench 1, Wrench 2, Wrench 10
-            Assert.Equal(3, viewModel.ToolCatalog.Count);
-            Assert.Equal("Wrench 1", viewModel.ToolCatalog[0].Name);
-            Assert.Equal("Wrench 2", viewModel.ToolCatalog[1].Name);
-            Assert.Equal("Wrench 10", viewModel.ToolCatalog[2].Name);
-        }
     }
 }

@@ -175,7 +175,7 @@ public partial class NewTaskViewModel : ObservableObject
     private int FindInsertionIndexLeft(int currentIndex, string toolName)
     {
         int low = 0;
-        int high = currentIndex - 2;
+        int high = currentIndex - 1;
 
         while (low < high)
         {

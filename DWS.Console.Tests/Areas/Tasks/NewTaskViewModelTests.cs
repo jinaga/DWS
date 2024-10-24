@@ -1,6 +1,5 @@
 using DWS.Console.ViewModels.Tasks;
 using DWS.Model;
-using Jinaga;
 
 namespace DWS.Console.Tests.Areas.Tasks
 {
@@ -16,7 +15,7 @@ namespace DWS.Console.Tests.Areas.Tasks
             viewModel.Load();
             await viewModel.Ready();
 
-            Assert.Empty(viewModel.ToolCatalog);
+            viewModel.ToolCatalog.Should().BeEmpty();
         }
 
         [Fact]
@@ -32,9 +31,9 @@ namespace DWS.Console.Tests.Areas.Tasks
             viewModel.Load();
             await viewModel.Ready();
 
-            Assert.Equal(2, viewModel.ToolCatalog.Count);
-            Assert.Contains(viewModel.ToolCatalog, t => t.Tool.toolGuid == tool1.toolGuid);
-            Assert.Contains(viewModel.ToolCatalog, t => t.Tool.toolGuid == tool2.toolGuid);
+            viewModel.ToolCatalog.Should().HaveCount(2);
+            viewModel.ToolCatalog.Should().Contain(t => t.Tool.toolGuid == tool1.toolGuid);
+            viewModel.ToolCatalog.Should().Contain(t => t.Tool.toolGuid == tool2.toolGuid);
         }
 
         [Fact]
@@ -52,9 +51,9 @@ namespace DWS.Console.Tests.Areas.Tasks
             viewModel.Load();
             await viewModel.Ready();
 
-            Assert.Equal(2, viewModel.Yards.Count);
-            Assert.Contains(viewModel.Yards, y => y.Yard.yardGuid == yard1.yardGuid);
-            Assert.Contains(viewModel.Yards, y => y.Yard.yardGuid == yard2.yardGuid);
+            viewModel.Yards.Should().HaveCount(2);
+            viewModel.Yards.Should().Contain(y => y.Yard.yardGuid == yard1.yardGuid);
+            viewModel.Yards.Should().Contain(y => y.Yard.yardGuid == yard2.yardGuid);
         }
 
         [Fact]
@@ -74,16 +73,15 @@ namespace DWS.Console.Tests.Areas.Tasks
             viewModel.Load();
             await viewModel.Ready();
 
-            Assert.Equal(3, viewModel.ToolCatalog.Count);
-            Assert.Equal("Hammer", viewModel.ToolCatalog[0].Name);
-            Assert.Equal("Screwdriver", viewModel.ToolCatalog[1].Name);
-            Assert.Equal("Wrench", viewModel.ToolCatalog[2].Name);
+            viewModel.ToolCatalog.Select(t => t.Name).Should().Equal(
+                "Hammer",
+                "Screwdriver",
+                "Wrench");
         }
 
         [Fact]
         public async Task WhenToolNamesHaveDifferentCase_SortingIsCaseInsensitive()
         {
-            // Arrange
             var jinagaClient = JinagaClient.Create();
             var supplier = await jinagaClient.Fact(new Supplier(new User("--- SUPPLIER CREATOR ---"), Guid.NewGuid()));
 
@@ -95,22 +93,19 @@ namespace DWS.Console.Tests.Areas.Tasks
             viewModel.Load();
             await viewModel.Ready();
 
-            // Act
             await jinagaClient.Fact(new ToolName(tool1, "wrench", []));
             await jinagaClient.Fact(new ToolName(tool2, "HAMMER", []));
             await jinagaClient.Fact(new ToolName(tool3, "Screwdriver", []));
 
-            // Assert
-            Assert.Equal(3, viewModel.ToolCatalog.Count);
-            Assert.Equal("HAMMER", viewModel.ToolCatalog[0].Name);
-            Assert.Equal("Screwdriver", viewModel.ToolCatalog[1].Name);
-            Assert.Equal("wrench", viewModel.ToolCatalog[2].Name);
+            viewModel.ToolCatalog.Select(t => t.Name).Should().Equal(
+                "HAMMER",
+                "Screwdriver",
+                "wrench");
         }
 
         [Fact]
         public async Task WhenToolNameChanges_ToolPositionIsUpdated()
         {
-            // Arrange
             var jinagaClient = JinagaClient.Create();
             var supplier = await jinagaClient.Fact(new Supplier(new User("--- SUPPLIER CREATOR ---"), Guid.NewGuid()));
 
@@ -121,20 +116,21 @@ namespace DWS.Console.Tests.Areas.Tasks
             viewModel.Load();
             await viewModel.Ready();
 
-            // Act - First set of names
             await jinagaClient.Fact(new ToolName(tool1, "Wrench", []));
             await jinagaClient.Fact(new ToolName(tool2, "Hammer", []));
 
             // Assert initial order
-            Assert.Equal("Hammer", viewModel.ToolCatalog[0].Name);
-            Assert.Equal("Wrench", viewModel.ToolCatalog[1].Name);
+            viewModel.ToolCatalog.Select(t => t.Name).Should().Equal(
+                "Hammer",
+                "Wrench");
 
-            // Act - Change name of first tool
+            // Change name of first tool
             await jinagaClient.Fact(new ToolName(tool1, "Adjustable Wrench", []));
 
             // Assert new order
-            Assert.Equal("Adjustable Wrench", viewModel.ToolCatalog[0].Name);
-            Assert.Equal("Hammer", viewModel.ToolCatalog[1].Name);
+            viewModel.ToolCatalog.Select(t => t.Name).Should().Equal(
+                "Adjustable Wrench",
+                "Hammer");
         }
     }
 }

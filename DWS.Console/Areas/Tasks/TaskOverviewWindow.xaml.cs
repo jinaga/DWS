@@ -1,4 +1,5 @@
 ﻿using DWS.Console.Asynchronous;
+using DWS.Console.ViewModels.Tasks;
 using DWS.Model;
 using System.Windows;
 

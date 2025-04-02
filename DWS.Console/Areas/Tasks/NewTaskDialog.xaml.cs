@@ -1,6 +1,7 @@
 ﻿using DWS.Console.Asynchronous;
 using Notifications.Wpf;
 using System.Windows;
+using DWS.Console.ViewModels.Tasks;
 
 namespace DWS.Console.Areas.Tasks
 {
@@ -36,10 +37,8 @@ namespace DWS.Console.Areas.Tasks
         {
             commandProcessor.Run(async () =>
             {
-                await Task.Delay(400);
-                throw new Exception("Test exception");
-                //await viewModel.Save();
-                //DialogResult = true;
+                await viewModel.Save();
+                DialogResult = true;
             });
         }
     }

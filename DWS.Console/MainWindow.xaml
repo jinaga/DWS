@@ -8,7 +8,7 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <StackPanel Orientation="Vertical">
-            <Button Content="New Task" Margin="10" Click="NewTask_Click" />
+            <Button Content="Show Task overview Window" Margin="10" Click="ShowTaskOverviewWindow_Click" />
         </StackPanel>
     </Grid>
 </Window>

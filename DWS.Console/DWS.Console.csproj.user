@@ -10,6 +10,9 @@
     <Compile Update="Areas\Tasks\NewTaskDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Areas\Tasks\TaskOverviewWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Areas\Tasks\NewTaskDialog.xaml">

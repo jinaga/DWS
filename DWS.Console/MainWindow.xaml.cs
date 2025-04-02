@@ -18,15 +18,15 @@ public partial class MainWindow : Window
         InitializeComponent();
     }
 
-    private void NewTask_Click(object sender, RoutedEventArgs e)
+    private void ShowTaskOverviewWindow_Click(object sender, RoutedEventArgs e)
     {
         commandProcessor.Run(async () =>
         {
             var client = JinagaConfig.Client;
             var supplier = await JinagaConfig.CreateSampleData(client);
-            var viewModel = new NewTaskViewModel(client, supplier);
-            var newTaskDialog = new NewTaskDialog(viewModel, commandProcessor);
-            newTaskDialog.ShowDialog();
+            var viewModel = new TaskOverviewViewModel(client, supplier);
+            var TaskOverviewWindow = new TaskOverviewWindow(viewModel, commandProcessor, client,supplier);
+            TaskOverviewWindow.ShowDialog();
         });
     }
 }

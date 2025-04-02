@@ -1,0 +1,29 @@
+﻿<Window x:Class="DWS.Console.Areas.Tasks.TaskOverviewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DWS.Console.Areas.Tasks"
+        mc:Ignorable="d"
+        Title="Overview tasks" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <DataGrid 
+            Grid.Row="0"
+            Margin="10"            
+            ItemsSource="{Binding Tasks}"
+            AutoGenerateColumns="False"
+            CanUserAddRows="False" >
+        </DataGrid>
+
+        <Button 
+            Grid.Row="1" 
+            Margin="10" Padding="5,0" Content="Add task" Click="AddTask_Click"   />
+      
+
+    </Grid>
+</Window>

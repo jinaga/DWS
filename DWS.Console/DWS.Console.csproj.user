@@ -7,15 +7,15 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Areas\Tasks\NewTaskDialog.xaml.cs">
+    <Compile Update="Forms\TaskOverview\NewTask\NewTaskDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Areas\Tasks\TaskOverviewWindow.xaml.cs">
+    <Compile Update="Forms\TaskOverview\TaskOverviewWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Areas\Tasks\NewTaskDialog.xaml">
+    <Page Update="Forms\TaskOverview\NewTask\NewTaskDialog.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="MainWindow.xaml">

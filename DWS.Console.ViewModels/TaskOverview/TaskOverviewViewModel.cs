@@ -1,9 +1,6 @@
-﻿
+﻿using DWS.Model;
 
-using DWS.Console.ViewModels.Tasks;
-using DWS.Model;
-
-namespace DWS.Console.Areas.Tasks
+namespace DWS.Console.ViewModels.TaskOverview
 {
     public partial class TaskOverviewViewModel: ObservableObject
     {

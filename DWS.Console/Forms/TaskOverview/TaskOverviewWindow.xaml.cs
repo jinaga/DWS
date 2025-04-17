@@ -1,10 +1,12 @@
 ﻿using DWS.Console.Asynchronous;
-using DWS.Console.ViewModels.Tasks;
+using DWS.Console.Forms.TaskOverview.NewTask;
+using DWS.Console.ViewModels.TaskOverview;
+using DWS.Console.ViewModels.TaskOverview.NewTask;
 using DWS.Model;
 using System.Windows;
 
 
-namespace DWS.Console.Areas.Tasks
+namespace DWS.Console.Forms.TaskOverview
 {
     /// <summary>
     /// Interaction logic for TaskOverviewWindow.xaml

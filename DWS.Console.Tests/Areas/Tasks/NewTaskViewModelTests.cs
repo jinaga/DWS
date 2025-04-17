@@ -1,4 +1,4 @@
-using DWS.Console.ViewModels.Tasks;
+using DWS.Console.ViewModels.TaskOverview.NewTask;
 using DWS.Model;
 
 namespace DWS.Console.Tests.Areas.Tasks;

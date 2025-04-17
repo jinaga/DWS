@@ -1,5 +1,5 @@
 ﻿
-namespace DWS.Console.Areas.Tasks
+namespace DWS.Console.ViewModels.TaskOverview
 {
 
     public partial class TaskViewModel : ObservableObject

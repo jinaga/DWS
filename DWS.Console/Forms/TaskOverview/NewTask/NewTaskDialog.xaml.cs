@@ -1,9 +1,8 @@
 ﻿using DWS.Console.Asynchronous;
-using Notifications.Wpf;
 using System.Windows;
-using DWS.Console.ViewModels.Tasks;
+using DWS.Console.ViewModels.TaskOverview.NewTask;
 
-namespace DWS.Console.Areas.Tasks
+namespace DWS.Console.Forms.TaskOverview.NewTask
 {
     /// <summary>
     /// Interaction logic for NewTaskDialog.xaml

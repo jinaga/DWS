@@ -225,13 +225,20 @@ public partial class NewTaskViewModel : ObservableObject
 
     public async Task Save()
     {
-        if (SelectedYard == null)
+        Yard? selectedYard = SelectedYard?.Yard ?? null; 
+
+        if (selectedYard == null)
         {
-            return;
+            var client = await jinagaClient.Fact(new Client(supplier, Guid.NewGuid()));
+            await jinagaClient.Fact(new ClientName(client, ClientName, []));
+            var yard = await jinagaClient.Fact(new Yard(client, Guid.NewGuid()));
+            await jinagaClient.Fact(new YardName(yard, YardName, []));
+            selectedYard = yard;
+
         }
 
         // Create the task
-        var task = await jinagaClient.Fact(new DWSTask(SelectedYard.Yard, Guid.NewGuid()));
+        var task = await jinagaClient.Fact(new DWSTask(selectedYard, Guid.NewGuid()));
 
         // Set the properties of the task
         await jinagaClient.Fact(new TaskClientName(task, ClientName, []));

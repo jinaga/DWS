@@ -3,6 +3,7 @@ using DWS.Console.Forms.TaskOverview.NewTask;
 using DWS.Console.ViewModels.TaskOverview;
 using DWS.Console.ViewModels.TaskOverview.NewTask;
 using DWS.Model;
+using Notifications.Wpf.ViewModels.Base;
 using System.Windows;
 
 
@@ -48,6 +49,15 @@ namespace DWS.Console.Forms.TaskOverview
                 var newTaskViewModel = new NewTaskViewModel(jinagaClient, supplier);
                 var newTaskDialog = new NewTaskDialog(newTaskViewModel, commandProcessor);
                 newTaskDialog.ShowDialog();
+            });
+        }
+
+
+        private void DeleteTask_Click(object sender, RoutedEventArgs e)
+        {
+            commandProcessor.Run(async () =>
+            {
+                await taskOverviewviewModel.DeleteTask();                
             });
         }
     }

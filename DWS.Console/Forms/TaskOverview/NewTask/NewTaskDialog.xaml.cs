@@ -40,5 +40,6 @@ namespace DWS.Console.Forms.TaskOverview.NewTask
                 DialogResult = true;
             });
         }
+
     }
 }

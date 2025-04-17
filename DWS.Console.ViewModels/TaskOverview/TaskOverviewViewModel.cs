@@ -1,4 +1,5 @@
-﻿using DWS.Model;
+﻿using DWS.Console.ViewModels.TaskOverview.NewTask;
+using DWS.Model;
 
 namespace DWS.Console.ViewModels.TaskOverview
 {
@@ -11,9 +12,10 @@ namespace DWS.Console.ViewModels.TaskOverview
 
         public ObservableCollection<TaskViewModel> Tasks { get; } = [];
 
-
         private IObserver? taskObserver;
 
+        [ObservableProperty]
+        private TaskViewModel? selectedTask;
 
 
         public TaskOverviewViewModel(JinagaClient jinagaClient, Supplier supplier)
@@ -83,6 +85,12 @@ namespace DWS.Console.ViewModels.TaskOverview
             Tasks.Clear();
         }
 
-
+        public async Task DeleteTask()
+        {
+            if (SelectedTask != null)
+            {
+               await jinagaClient.Fact(new TaskDelete(SelectedTask.Task, DateTime.Now));
+            }            
+        }
     }
 }

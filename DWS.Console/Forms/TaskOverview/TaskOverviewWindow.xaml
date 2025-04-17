@@ -19,10 +19,20 @@
             Grid.Row="0"
             Margin="10"            
             ItemsSource="{Binding Tasks}"
+            SelectedItem="{Binding SelectedTask}"
             AutoGenerateColumns="False"
             CanUserAddRows="False" >
 
             <DataGrid.Columns>
+
+                <DataGridTemplateColumn  Width="Auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Margin="10" Padding="5" Content="Delete" Click="DeleteTask_Click" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
                 <DataGridTemplateColumn Header="Clientname" Width="400">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>

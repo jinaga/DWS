@@ -59,7 +59,7 @@ namespace DWS.Console.ViewModels.TaskOverview
 
             taskObserver = jinagaClient.Watch(tasksInSupplier, supplier, taskProjection =>
             {
-                var task = new TaskViewModel (taskProjection.DWSTask);
+                var task = new TaskViewModel (jinagaClient,taskProjection.DWSTask);
                 Tasks.Add(task);
 
                 taskProjection.clientNames.OnAdded(name =>
@@ -84,13 +84,6 @@ namespace DWS.Console.ViewModels.TaskOverview
             taskObserver = null;
             Tasks.Clear();
         }
-
-        public async Task DeleteTask()
-        {
-            if (SelectedTask != null)
-            {
-               await jinagaClient.Fact(new TaskDelete(SelectedTask.Task, DateTime.Now));
-            }            
-        }
+       
     }
 }

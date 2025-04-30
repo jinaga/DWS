@@ -1,12 +1,20 @@
 ﻿
+using CommunityToolkit.Mvvm.Input;
+using Jinaga;
+using System.Diagnostics;
+using System.Windows.Input;
+
 namespace DWS.Console.ViewModels.TaskOverview
 {
 
     public partial class TaskViewModel : ObservableObject
     {
 
-        public TaskViewModel(DWSTask task)
+        private readonly JinagaClient jinagaClient;      
+
+        public TaskViewModel(JinagaClient jinagaClient, DWSTask task)
         {
+            this.jinagaClient = jinagaClient;
             Task = task;
         }
 
@@ -18,5 +26,24 @@ namespace DWS.Console.ViewModels.TaskOverview
 
         [ObservableProperty]
         private string yardName = string.Empty;
+
+      
+        [RelayCommand(AllowConcurrentExecutions=true,CanExecute = nameof(CanDeleteTask))   ]
+        private async Task DeleteTask()
+        {
+            Debug.Print("DeleteTaskCommand");
+            await jinagaClient.Fact(new TaskDelete(Task, DateTime.Now));
+        }
+
+      
+        private bool CanDeleteTask()
+        {
+            return true;
+            //deleteTaskCommand?.NotifyCanExecuteChanged();
+        }
+
+
+
+
     }
 }

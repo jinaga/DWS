@@ -28,7 +28,7 @@
                 <DataGridTemplateColumn  Width="Auto">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button Margin="10" Padding="5" Content="Delete" Click="DeleteTask_Click" />
+                            <Button Margin="10" Padding="5" Content="Delete" Command="{Binding DeleteTaskCommand}" />
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

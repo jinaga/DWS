@@ -53,13 +53,6 @@ namespace DWS.Console.Forms.TaskOverview
         }
 
 
-        private void DeleteTask_Click(object sender, RoutedEventArgs e)
-        {
-            commandProcessor.Run(async () =>
-            {
-                await taskOverviewviewModel.DeleteTask();                
-            });
-        }
     }
 
 

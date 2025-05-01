@@ -11,15 +11,20 @@ public partial class NewTaskViewModel : ObservableObject
     public ObservableCollection<YardViewModel> Yards { get; } = [];
     public ObservableCollection<ToolViewModel> ToolCatalog { get; } = [];
     public ObservableCollection<TaskToolViewModel> Tools { get; } = [];
+    public ObservableCollection<WorkerViewModel> Workers { get; } = []; 
 
     private IObserver? yardObserver;
     private IObserver? toolObserver;
+    private IObserver? workerObserver;
 
     [ObservableProperty]
     private string clientName = string.Empty;
 
     [ObservableProperty]
     private string yardName = string.Empty;
+
+    [ObservableProperty]
+    private WorkerViewModel? selectedWorker;    
 
     [ObservableProperty]
     private YardViewModel? selectedYard;
@@ -39,13 +44,16 @@ public partial class NewTaskViewModel : ObservableObject
 
         LoadYards();
         LoadTools();
+        LoadWorkers();
     }
 
+   
     public Task Ready()
     {
         return Task.WhenAll(
             yardObserver?.Loaded ?? Task.CompletedTask,
-            toolObserver?.Loaded ?? Task.CompletedTask
+            toolObserver?.Loaded ?? Task.CompletedTask,
+            workerObserver?.Loaded ?? Task.CompletedTask
         );
     }
 
@@ -53,7 +61,9 @@ public partial class NewTaskViewModel : ObservableObject
     {
         UnloadYards();
         UnloadTools();
+        UnloadWorkers();
     }
+
 
     private void LoadYards()
     {
@@ -138,6 +148,36 @@ public partial class NewTaskViewModel : ObservableObject
         });
     }
 
+    private void LoadWorkers()
+    {
+       var workersInSupplier = Given<Supplier>.Match((supplier, facts) =>
+         from worker in facts.OfType<Worker>()
+         where worker.supplier == supplier && !worker.IsRevoked
+         select new
+         {
+             worker,
+             workerNames = facts.Observable(worker.Names.Select(name => name.value))
+         }
+       );
+
+
+        workerObserver = jinagaClient.Watch(workersInSupplier, supplier, workerProjection =>
+        {
+            WorkerViewModel worker = new WorkerViewModel(workerProjection.worker);
+            Workers.Add(worker);
+
+            workerProjection.workerNames.OnAdded(name =>
+            {
+                worker.Name = name;
+            });
+
+            return () => Workers.Remove(worker);
+        });
+
+    }
+
+
+
     private void UnloadYards()
     {
         yardObserver?.Stop();
@@ -150,6 +190,14 @@ public partial class NewTaskViewModel : ObservableObject
         toolObserver?.Stop();
         toolObserver = null;
         ToolCatalog.Clear();
+    }
+
+
+    private void UnloadWorkers()
+    {
+        workerObserver?.Stop();
+        workerObserver = null;
+        Workers.Clear();
     }
 
     private int FindInsertionIndex(int currentIndex, string toolName)
@@ -243,6 +291,11 @@ public partial class NewTaskViewModel : ObservableObject
         // Set the properties of the task
         await jinagaClient.Fact(new TaskClientName(task, ClientName, []));
         await jinagaClient.Fact(new TaskYardName(task, YardName, []));
+        if (SelectedWorker != null)
+        {
+            await jinagaClient.Fact(new TaskWorker(task, SelectedWorker.Worker, []));
+        }
+        
 
         // Add the tools
         foreach (var taskToolViewModel in Tools)

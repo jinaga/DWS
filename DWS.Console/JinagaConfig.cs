@@ -22,9 +22,28 @@ static class JinagaConfig
         });
 
         await CreateSampleTools(jinagaClient, supplier);
-        await CreateSampleCilents(jinagaClient, supplier);
+        await CreateSampleClients(jinagaClient, supplier);
+        await CreateSampleWorkers(jinagaClient, supplier);
 
         return supplier;
+    }
+
+    private static async Task CreateSampleWorkers(JinagaClient jinagaClient, Supplier supplier)
+    {
+        await CreateWorker("Jan");
+        await CreateWorker("Michael");
+        await CreateWorker("King Gip");
+        await CreateWorker("Luc");
+        await CreateWorker("Karen");
+        await CreateWorker("Thomas");
+
+        async Task CreateWorker(string userName)
+        {
+            var user = await jinagaClient.Fact(new User($"PK_{userName}"));
+            await jinagaClient.Fact(new UserName(user, userName, []));
+            await jinagaClient.Fact(new Worker(supplier, user, DateTime.UtcNow));            
+        }
+
     }
 
     private static async Task CreateSampleTools(JinagaClient jinagaClient, Supplier supplier)
@@ -42,7 +61,7 @@ static class JinagaConfig
         }
     }
 
-    private static async Task CreateSampleCilents(JinagaClient jinagaClient, Supplier supplier)
+    private static async Task CreateSampleClients(JinagaClient jinagaClient, Supplier supplier)
     {
         var clientA = await jinagaClient.Fact(new Client(supplier, Guid.NewGuid()));
         await jinagaClient.Fact(new ClientName(clientA, "Client A", []));

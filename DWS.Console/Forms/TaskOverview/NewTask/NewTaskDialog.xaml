@@ -27,6 +27,11 @@
                 <TextBlock Text="{Binding Country}" Grid.Column="6" Margin="5"/>
             </Grid>
         </DataTemplate>
+
+        <DataTemplate x:Key="WorkerTemplate" DataType="{x:Type vm:WorkerViewModel}">
+            <TextBlock Text="{Binding Name}" />
+        </DataTemplate>
+
         <CollectionViewSource x:Key="ToolCatalog" Source="{Binding ToolCatalog}" />
     </Window.Resources>
     <Grid Margin="10">
@@ -116,7 +121,15 @@
                 <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4" Margin="10" Text="{Binding Notes}" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" />
 
                 <Label Grid.Row="3" Grid.Column="0" Margin="10" Content="Worker" />
-                <ComboBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" Margin="10" ItemsSource="{Binding Workers}" />
+                <ComboBox 
+                    Grid.Row="3" 
+                    Grid.Column="1" 
+                    Grid.ColumnSpan="4" 
+                    Margin="10" 
+                    ItemsSource="{Binding Workers}"                    
+                    ItemTemplate="{StaticResource WorkerTemplate}"
+                    SelectedItem="{Binding SelectedWorker}" 
+                />
             </Grid>
         </GroupBox>
 

@@ -23,10 +23,27 @@ public record Dispatcher(Supplier supplier, User user, DateTime createdDate);
 public record DispatcherRevoke(Dispatcher dispatcher);
 
 [FactType("DWS.Worker")]
-public record Worker(Supplier supplier, User user, DateTime createdDate);
+public record Worker(Supplier supplier, User user, DateTime createdDate) 
+{
+   public Condition IsRevoked => Condition.Define(facts =>
+     facts.Any<WorkerRevoke>(revoke => revoke.worker == this &&
+       !facts.Any<WorkerRestore>(restore => restore.workerRevoke == revoke)
+     )
+   );
+
+    public Relation<UserName> Names => Relation.Define(facts =>
+          from name in facts.OfType<UserName>()
+          where name.user == this.user &&
+             !facts.OfType<UserName>().Any(next => next.prior.Contains(name))
+          select name
+     );
+};
 
 [FactType("DWS.Worker.Revoke")]
-public record WorkerRevoke(Worker worker);
+public record WorkerRevoke(Worker worker, DateTime revokedDate);
+
+[FactType("DWS.Worker.Restore")]
+public record WorkerRestore(WorkerRevoke workerRevoke);
 
 [FactType("DWS.User.Name")]
 public record UserName(User user, string value, UserName[] prior);

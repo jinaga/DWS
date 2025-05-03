@@ -171,6 +171,9 @@ public record ToolRestore(ToolDelete toolDelete);
 [FactType("DWS.Tool.Name")]
 public record ToolName(Tool tool, string value, ToolName[] prior);
 
+[FactType("DWS.Tool.Approved")]
+public record ToolApproved(Tool tool);
+
 [FactType("DWS.TypeOfWork")]
 public record TypeOfWork(Supplier supplier, Guid typeOfWorkGuid)
 {
@@ -271,12 +274,6 @@ public record DWSTask(Yard yard, Guid taskGuid)
       from toolLookup in facts.OfType<TaskToolLookup>()
       where toolLookup.task == this
       select toolLookup
-    );
-
-    public Relation<TaskToolOnTheFly> ToolOnTheFlys => Relation.Define(facts =>
-      from toolOnTheFly in facts.OfType<TaskToolOnTheFly>()
-      where toolOnTheFly.task == this
-      select toolOnTheFly
     );
 
     public Relation<TaskWorker> Workers => Relation.Define(facts =>

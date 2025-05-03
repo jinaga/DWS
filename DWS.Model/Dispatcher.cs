@@ -10,26 +10,64 @@ public record Supplier(User creator, Guid supplierGuid)
     );
 }
 
+[FactType("DWS.User.Name")]
+public record UserName(User user, string value, UserName[] prior);
+
+
 [FactType("DWS.Administrator")]
-public record Administrator(Supplier supplier, User user, DateTime createdDate);
+public record Administrator(Supplier supplier, User user, DateTime createdDate)
+{
+    public Condition IsRevoked => Condition.Define(facts =>
+        facts.Any<AdministratorRevoke>(revoke => revoke.administrator == this &&
+            !facts.Any<AdministatorRestore>(restore => restore.administratorRevoke == revoke)
+        )
+    );
+
+    public Relation<UserName> Names => Relation.Define(facts =>
+        from name in facts.OfType<UserName>()
+        where name.user == this.user &&
+            !facts.OfType<UserName>().Any(next => next.prior.Contains(name))
+        select name
+    );
+}
 
 [FactType("DWS.Administator.Revoke")]
-public record AdministratorRevoke(Administrator administrator);
+public record AdministratorRevoke(Administrator administrator, DateTime revokedDate);
+
+[FactType("DWS.Administator.Restore")]
+public record AdministatorRestore(AdministratorRevoke administratorRevoke);
 
 [FactType("DWS.Dispatcher")]
-public record Dispatcher(Supplier supplier, User user, DateTime createdDate);
+public record Dispatcher(Supplier supplier, User user, DateTime createdDate)
+{
+    public Condition IsRevoked => Condition.Define(facts =>
+        facts.Any<DispatcherRevoke>(revoke => revoke.dispatcher == this &&
+            !facts.Any<DispatcherRestore>(restore => restore.dispatcherRevoke == revoke)
+        )
+    );
+
+    public Relation<UserName> Names => Relation.Define(facts =>
+        from name in facts.OfType<UserName>()
+        where name.user == this.user &&
+            !facts.OfType<UserName>().Any(next => next.prior.Contains(name))
+        select name
+    );
+}
 
 [FactType("DWS.Dispatcher.Revoke")]
-public record DispatcherRevoke(Dispatcher dispatcher);
+public record DispatcherRevoke(Dispatcher dispatcher, DateTime revokedDate);
+
+[FactType("DWS.Dispatcher.Restore")]
+public record DispatcherRestore(DispatcherRevoke dispatcherRevoke);
 
 [FactType("DWS.Worker")]
 public record Worker(Supplier supplier, User user, DateTime createdDate) 
 {
-   public Condition IsRevoked => Condition.Define(facts =>
-     facts.Any<WorkerRevoke>(revoke => revoke.worker == this &&
-       !facts.Any<WorkerRestore>(restore => restore.workerRevoke == revoke)
-     )
-   );
+    public Condition IsRevoked => Condition.Define(facts =>
+        facts.Any<WorkerRevoke>(revoke => revoke.worker == this &&
+            !facts.Any<WorkerRestore>(restore => restore.workerRevoke == revoke)
+        )
+    );
 
     public Relation<UserName> Names => Relation.Define(facts =>
           from name in facts.OfType<UserName>()
@@ -44,9 +82,6 @@ public record WorkerRevoke(Worker worker, DateTime revokedDate);
 
 [FactType("DWS.Worker.Restore")]
 public record WorkerRestore(WorkerRevoke workerRevoke);
-
-[FactType("DWS.User.Name")]
-public record UserName(User user, string value, UserName[] prior);
 
 [FactType("DWS.Client")]
 public record Client(Supplier supplier, Guid clientGuid)

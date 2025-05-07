@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac" Version="8.2.1" />
     <PackageReference Include="Notification.WPF" Version="8.0.0" />
   </ItemGroup>
 

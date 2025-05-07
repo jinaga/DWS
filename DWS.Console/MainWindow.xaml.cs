@@ -1,6 +1,6 @@
-﻿using DWS.Console.Asynchronous;
+﻿using Autofac;
+using DWS.Console.Asynchronous;
 using DWS.Console.Forms.TaskOverview;
-using DWS.Console.ViewModels.TaskOverview;
 using Notification.Wpf;
 using System.Windows;
 
@@ -25,8 +25,15 @@ public partial class MainWindow : Window
         {
             var client = JinagaConfig.Client;
             var supplier = await JinagaConfig.CreateSampleData(client);
-            var viewModel = new TaskOverviewViewModel(client, supplier);
-            var taskOverviewWindow = new TaskOverviewWindow(viewModel, commandProcessor, client, supplier);
+
+            var builder = new ContainerBuilder();
+            builder.RegisterInstance(client);
+            builder.RegisterInstance(supplier);
+            builder.RegisterInstance(commandProcessor);
+            builder.RegisterModule<ConsoleModule>();
+            var container = builder.Build();
+
+            var taskOverviewWindow = container.Resolve<TaskOverviewWindow>();
             taskOverviewWindow.ShowDialog();
         });
     }

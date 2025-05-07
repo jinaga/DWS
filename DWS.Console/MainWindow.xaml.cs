@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using DWS.Console.Asynchronous;
 using DWS.Console.Forms.TaskOverview;
+using DWS.Model;
 using Notification.Wpf;
 using System.Windows;
 
@@ -11,11 +12,21 @@ namespace DWS.Console;
 public partial class MainWindow : Window
 {
     private readonly CommandProcessor commandProcessor;
+    private readonly IContainer container;
 
     public MainWindow()
     {
         var notificationManager = new NotificationManager();
-        commandProcessor = new CommandProcessor(notificationManager);
+
+        var client = JinagaConfig.Client;
+        var builder = new ContainerBuilder();
+        builder.RegisterInstance(client);
+        builder.RegisterInstance(notificationManager);
+        builder.RegisterModule<ConsoleModule>();
+        container = builder.Build();
+
+        commandProcessor = container.Resolve<CommandProcessor>();
+
         InitializeComponent();
     }
 
@@ -23,17 +34,11 @@ public partial class MainWindow : Window
     {
         commandProcessor.Run(async () =>
         {
-            var client = JinagaConfig.Client;
+            var client = container.Resolve<JinagaClient>();
             var supplier = await JinagaConfig.CreateSampleData(client);
 
-            var builder = new ContainerBuilder();
-            builder.RegisterInstance(client);
-            builder.RegisterInstance(supplier);
-            builder.RegisterInstance(commandProcessor);
-            builder.RegisterModule<ConsoleModule>();
-            var container = builder.Build();
-
-            var taskOverviewWindow = container.Resolve<TaskOverviewWindow>();
+            var taskOverviewWindowFactory = container.Resolve<Func<Supplier, TaskOverviewWindow>>();
+            var taskOverviewWindow = taskOverviewWindowFactory(supplier);
             taskOverviewWindow.ShowDialog();
         });
     }

@@ -11,6 +11,10 @@ class ConsoleModule: Module
     {
         builder.RegisterModule<ConsoleViewModelsModule>();
 
+        builder.RegisterType<CommandProcessor>()
+            .AsSelf()
+            .InstancePerDependency();
+
         builder.RegisterType<TaskOverviewWindow>()
             .AsSelf()
             .InstancePerDependency();

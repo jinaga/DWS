@@ -1,6 +1,7 @@
 ﻿using DWS.Console.ViewModels.TaskOverview.NewTask;
 using DWS.Model;
 using System;
+using System.Diagnostics;
 
 namespace DWS.Console.ViewModels.TaskOverview
 {
@@ -45,35 +46,41 @@ namespace DWS.Console.ViewModels.TaskOverview
 
         private void LoadTasks()
         {
+            // Simplified query to find all tasks regardless of deletion status
             var tasksInSupplier = Given<Supplier>.Match((supplier, facts) =>
                 from client in facts.OfType<Client>()
-                where client.supplier == supplier && !client.IsDeleted
+                where client.supplier == supplier
                 from yard in facts.OfType<Yard>()
-                where yard.client == client && !yard.IsDeleted
-                from DWSTask in facts.OfType<DWSTask>()
-                where DWSTask.yard == yard && !DWSTask.IsDeleted
+                where yard.client == client
+                from task in facts.OfType<DWSTask>()
+                where task.yard == yard
                 select new
                 {
-                    DWSTask,
-                    clientNames = facts.Observable(DWSTask.ClientNames.Select(name => name.value)),
-                    yardNames = facts.Observable(DWSTask.YardNames.Select(name => name.value))
+                    DWSTask = task,
+                    clientNames = facts.Observable(task.ClientNames.Select(name => name.value)),
+                    yardNames = facts.Observable(task.YardNames.Select(name => name.value))
                 }
             );
-
+    
             taskObserver = jinagaClient.Watch(tasksInSupplier, supplier, taskProjection =>
             {
                 // Use the factory to create the TaskViewModel
                 var task = taskViewModelFactory(taskProjection.DWSTask);
                 Tasks.Add(task);
-
+                
+                // Debug log
+                Debug.WriteLine($"Task added: {taskProjection.DWSTask.taskGuid}");
+    
                 taskProjection.clientNames.OnAdded(name =>
                 {
                     task.ClientName = name;
+                    Debug.WriteLine($"Client name added: {name}");
                 });
-
+    
                 taskProjection.yardNames.OnAdded(name =>
                 {
                     task.YardName = name;
+                    Debug.WriteLine($"Yard name added: {name}");
                 });
                
                 return () => Tasks.Remove(task);

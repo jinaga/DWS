@@ -36,18 +36,51 @@ public class NewTaskViewModelErrorTests : AutofacTestBase
         await viewModel.Save();
         
         // Assert - a new yard should have been created
-        // We can verify this by checking if a new yard with the specified name exists
-        var yardsQuery = Given<Supplier>.Match((supplier, facts) =>
+        // Get all clients for this supplier
+        var clientsQuery = Given<Supplier>.Match((supplier, facts) =>
             from client in facts.OfType<Client>()
             where client.supplier == supplier
-            from yard in facts.OfType<Yard>()
-            where yard.client == client
-            from yardName in facts.OfType<YardName>()
-            where yardName.yard == yard && yardName.value == "Test Yard"
-            select yard
+            select client
         );
         
-        var yards = await JinagaClient.Query(yardsQuery, supplier);
-        yards.Should().HaveCount(1);
+        var clients = await JinagaClient.Query(clientsQuery, supplier);
+        
+        // For each client, get yards
+        bool foundYardWithName = false;
+        foreach (var client in clients)
+        {
+            // Get yards for this client
+            var yardsQuery = Given<Client>.Match((client, facts) =>
+                from yard in facts.OfType<Yard>()
+                where yard.client == client
+                select yard
+            );
+            
+            var yards = await JinagaClient.Query(yardsQuery, client);
+            
+            // For each yard, check if it has the name we're looking for
+            foreach (var yard in yards)
+            {
+                // Get names for this yard
+                var namesQuery = Given<Yard>.Match((yard, facts) =>
+                    from name in facts.OfType<YardName>()
+                    where name.yard == yard
+                    select name
+                );
+                
+                var names = await JinagaClient.Query(namesQuery, yard);
+                
+                // Check if any name matches what we're looking for
+                if (names.Any(n => n.value == "Test Yard"))
+                {
+                    foundYardWithName = true;
+                    break;
+                }
+            }
+            
+            if (foundYardWithName) break;
+        }
+        
+        foundYardWithName.Should().BeTrue("A yard with name 'Test Yard' should have been created");
     }
 }

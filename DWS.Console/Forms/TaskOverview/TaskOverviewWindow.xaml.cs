@@ -1,11 +1,10 @@
-﻿using DWS.Console.Asynchronous;
+﻿using Autofac;
+using DWS.Console.Asynchronous;
 using DWS.Console.Forms.TaskOverview.NewTask;
 using DWS.Console.ViewModels.TaskOverview;
 using DWS.Console.ViewModels.TaskOverview.NewTask;
-using DWS.Model;
 using Notifications.Wpf.ViewModels.Base;
 using System.Windows;
-
 
 namespace DWS.Console.Forms.TaskOverview
 {
@@ -16,18 +15,23 @@ namespace DWS.Console.Forms.TaskOverview
     {
         private readonly TaskOverviewViewModel taskOverviewviewModel;
         private readonly CommandProcessor commandProcessor;
-        private readonly JinagaClient jinagaClient;
-        private readonly Supplier supplier;
+        private readonly IContainer container;
 
-
-        public TaskOverviewWindow(TaskOverviewViewModel viewModel, CommandProcessor commandProcessor, JinagaClient jinagaClient, Supplier supplier)
+        public TaskOverviewWindow()
         {
-            this.taskOverviewviewModel = viewModel;
-            this.commandProcessor = commandProcessor;
-            this.jinagaClient = jinagaClient;
-            this.supplier = supplier;
-            DataContext = taskOverviewviewModel;
             InitializeComponent();
+            
+            // Get the container from the application
+            container = ((App)Application.Current).Container;
+            
+            // Get the command processor
+            commandProcessor = container.Resolve<CommandProcessor>();
+            
+            // Resolve the view model from the container
+            taskOverviewviewModel = container.Resolve<TaskOverviewViewModel>();
+            
+            // Set the DataContext
+            DataContext = taskOverviewviewModel;
         }
 
         protected override void OnInitialized(EventArgs e)
@@ -45,9 +49,13 @@ namespace DWS.Console.Forms.TaskOverview
         private void AddTask_Click(object sender, RoutedEventArgs e)
         {
             commandProcessor.Run(async () =>
-            {               
-                var newTaskViewModel = new NewTaskViewModel(jinagaClient, supplier);
-                var newTaskDialog = new NewTaskDialog(newTaskViewModel, commandProcessor);
+            {
+                // Resolve the NewTaskViewModel from the container
+                var newTaskViewModel = container.Resolve<NewTaskViewModel>();
+                
+                // Create the dialog with the resolved view model
+                var newTaskDialog = new NewTaskDialog();
+                newTaskDialog.DataContext = newTaskViewModel;
                 newTaskDialog.ShowDialog();
             });
         }

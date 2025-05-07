@@ -1,14 +1,14 @@
 ﻿using DWS.Console.ViewModels.TaskOverview.NewTask;
 using DWS.Model;
+using System;
 
 namespace DWS.Console.ViewModels.TaskOverview
 {
     public partial class TaskOverviewViewModel: ObservableObject
     {
-
         private readonly JinagaClient jinagaClient;
         private readonly Supplier supplier;
-
+        private readonly Func<DWSTask, TaskViewModel> taskViewModelFactory;
 
         public ObservableCollection<TaskViewModel> Tasks { get; } = [];
 
@@ -17,11 +17,14 @@ namespace DWS.Console.ViewModels.TaskOverview
         [ObservableProperty]
         private TaskViewModel? selectedTask;
 
-
-        public TaskOverviewViewModel(JinagaClient jinagaClient, Supplier supplier)
+        public TaskOverviewViewModel(
+            JinagaClient jinagaClient,
+            Supplier supplier,
+            Func<DWSTask, TaskViewModel> taskViewModelFactory)
         {
-            this.jinagaClient = jinagaClient; 
+            this.jinagaClient = jinagaClient;
             this.supplier = supplier;
+            this.taskViewModelFactory = taskViewModelFactory;
         }
 
 
@@ -44,22 +47,23 @@ namespace DWS.Console.ViewModels.TaskOverview
         {
             var tasksInSupplier = Given<Supplier>.Match((supplier, facts) =>
                 from client in facts.OfType<Client>()
-                where client.supplier == supplier && !client.IsDeleted  
+                where client.supplier == supplier && !client.IsDeleted
                 from yard in facts.OfType<Yard>()
-                where yard.client == client && !yard.IsDeleted      
+                where yard.client == client && !yard.IsDeleted
                 from DWSTask in facts.OfType<DWSTask>()
-                where DWSTask.yard == yard && !DWSTask.IsDeleted    
+                where DWSTask.yard == yard && !DWSTask.IsDeleted
                 select new
-                { 
+                {
                     DWSTask,
                     clientNames = facts.Observable(DWSTask.ClientNames.Select(name => name.value)),
                     yardNames = facts.Observable(DWSTask.YardNames.Select(name => name.value))
-                } 
+                }
             );
 
             taskObserver = jinagaClient.Watch(tasksInSupplier, supplier, taskProjection =>
             {
-                var task = new TaskViewModel (jinagaClient,taskProjection.DWSTask);
+                // Use the factory to create the TaskViewModel
+                var task = taskViewModelFactory(taskProjection.DWSTask);
                 Tasks.Add(task);
 
                 taskProjection.clientNames.OnAdded(name =>
@@ -71,7 +75,6 @@ namespace DWS.Console.ViewModels.TaskOverview
                 {
                     task.YardName = name;
                 });
-
                
                 return () => Tasks.Remove(task);
             });

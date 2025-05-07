@@ -1,4 +1,5 @@
-﻿using DWS.Console.Asynchronous;
+﻿using Autofac;
+using DWS.Console.Asynchronous;
 using System.Windows;
 using DWS.Console.ViewModels.TaskOverview.NewTask;
 
@@ -12,11 +13,18 @@ namespace DWS.Console.Forms.TaskOverview.NewTask
         private readonly NewTaskViewModel viewModel;
         private readonly CommandProcessor commandProcessor;
 
-        public NewTaskDialog(NewTaskViewModel viewModel, CommandProcessor commandProcessor)
+        public NewTaskDialog()
         {
-            this.viewModel = viewModel;
-            this.commandProcessor = commandProcessor;
+            // Get the container from the application
+            var container = ((App)Application.Current).Container;
+            
+            // Resolve dependencies from the container
+            viewModel = container.Resolve<NewTaskViewModel>();
+            commandProcessor = container.Resolve<CommandProcessor>();
+            
+            // Set the DataContext
             DataContext = viewModel;
+            
             InitializeComponent();
         }
 

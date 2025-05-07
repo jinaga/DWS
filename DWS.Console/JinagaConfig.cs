@@ -6,7 +6,7 @@ static class JinagaConfig
 {
     public static JinagaClient Client { get; } = CreateJinagaClient();
 
-    private static JinagaClient CreateJinagaClient()
+    public static JinagaClient CreateJinagaClient()
     {
         JinagaClient jinagaClient = JinagaClient.Create();
 

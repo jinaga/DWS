@@ -1,17 +1,22 @@
 ﻿using DWS.Model;
+using System;
+using System.Threading.Tasks;
 
 namespace DWS.Console.ViewModels.TaskOverview.NewTask;
-
 
 public partial class NewTaskViewModel : ObservableObject
 {
     private readonly JinagaClient jinagaClient;
     private readonly Supplier supplier;
+    private readonly Func<Yard, YardViewModel> yardViewModelFactory;
+    private readonly Func<Tool, ToolViewModel> toolViewModelFactory;
+    private readonly Func<Worker, WorkerViewModel> workerViewModelFactory;
+    private readonly ITaskToolViewModelFactory taskToolViewModelFactory;
 
     public ObservableCollection<YardViewModel> Yards { get; } = [];
     public ObservableCollection<ToolViewModel> ToolCatalog { get; } = [];
     public ObservableCollection<TaskToolViewModel> Tools { get; } = [];
-    public ObservableCollection<WorkerViewModel> Workers { get; } = []; 
+    public ObservableCollection<WorkerViewModel> Workers { get; } = [];
 
     private IObserver? yardObserver;
     private IObserver? toolObserver;
@@ -24,15 +29,25 @@ public partial class NewTaskViewModel : ObservableObject
     private string yardName = string.Empty;
 
     [ObservableProperty]
-    private WorkerViewModel? selectedWorker;    
+    private WorkerViewModel? selectedWorker;
 
     [ObservableProperty]
     private YardViewModel? selectedYard;
 
-    public NewTaskViewModel(JinagaClient jinagaClient, Supplier supplier)
+    public NewTaskViewModel(
+        JinagaClient jinagaClient,
+        Supplier supplier,
+        Func<Yard, YardViewModel> yardViewModelFactory,
+        Func<Tool, ToolViewModel> toolViewModelFactory,
+        Func<Worker, WorkerViewModel> workerViewModelFactory,
+        ITaskToolViewModelFactory taskToolViewModelFactory)
     {
         this.jinagaClient = jinagaClient;
         this.supplier = supplier;
+        this.yardViewModelFactory = yardViewModelFactory;
+        this.toolViewModelFactory = toolViewModelFactory;
+        this.workerViewModelFactory = workerViewModelFactory;
+        this.taskToolViewModelFactory = taskToolViewModelFactory;
     }
 
     public void Load()
@@ -90,7 +105,8 @@ public partial class NewTaskViewModel : ObservableObject
 
         yardObserver = jinagaClient.Watch(yardsInSupplier, supplier, yardProjection =>
         {
-            YardViewModel yard = new YardViewModel(yardProjection.yard);
+            // Use the factory to create the YardViewModel
+            YardViewModel yard = yardViewModelFactory(yardProjection.yard);
             Yards.Add(yard);
 
             yardProjection.clientNames.OnAdded(name =>
@@ -130,7 +146,8 @@ public partial class NewTaskViewModel : ObservableObject
 
         toolObserver = jinagaClient.Watch(toolsInSupplier, supplier, toolProjection =>
         {
-            ToolViewModel tool = new ToolViewModel(toolProjection.tool);
+            // Use the factory to create the ToolViewModel
+            ToolViewModel tool = toolViewModelFactory(toolProjection.tool);
             ToolCatalog.Insert(0, tool);
 
             toolProjection.toolNames.OnAdded(name =>
@@ -163,7 +180,8 @@ public partial class NewTaskViewModel : ObservableObject
 
         workerObserver = jinagaClient.Watch(workersInSupplier, supplier, workerProjection =>
         {
-            WorkerViewModel worker = new WorkerViewModel(workerProjection.worker);
+            // Use the factory to create the WorkerViewModel
+            WorkerViewModel worker = workerViewModelFactory(workerProjection.worker);
             Workers.Add(worker);
 
             workerProjection.workerNames.OnAdded(name =>
@@ -173,10 +191,23 @@ public partial class NewTaskViewModel : ObservableObject
 
             return () => Workers.Remove(worker);
         });
-
     }
 
 
+
+    // Method to add a new tool to the task
+    public void AddTool(Tool tool)
+    {
+        var taskTool = taskToolViewModelFactory.Create(tool);
+        Tools.Add(taskTool);
+    }
+
+    // Method to add a new tool to the task by name
+    public void AddToolByName(string toolName)
+    {
+        var taskTool = taskToolViewModelFactory.Create(toolName);
+        Tools.Add(taskTool);
+    }
 
     private void UnloadYards()
     {

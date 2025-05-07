@@ -1,10 +1,7 @@
-using Autofac;
 using DWS.Console.ViewModels.TaskOverview;
 using DWS.Console.ViewModels.TaskOverview.NewTask;
 using DWS.Model;
-using Jinaga;
 using Jinaga.UnitTest;
-using System;
 
 namespace DWS.Console.Tests
 {

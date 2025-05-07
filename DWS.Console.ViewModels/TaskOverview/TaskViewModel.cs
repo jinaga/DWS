@@ -1,8 +1,6 @@
 ﻿
 using CommunityToolkit.Mvvm.Input;
-using Jinaga;
 using System.Diagnostics;
-using System.Windows.Input;
 
 namespace DWS.Console.ViewModels.TaskOverview
 {

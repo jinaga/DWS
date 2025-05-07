@@ -1,10 +1,7 @@
-﻿using Autofac;
-using DWS.Console.Asynchronous;
+﻿using DWS.Console.Asynchronous;
 using DWS.Console.ViewModels.TaskOverview;
 using DWS.Console.ViewModels.TaskOverview.NewTask;
 using DWS.Model;
-using Jinaga;
-using System;
 using System.Windows;
 
 namespace DWS.Console;

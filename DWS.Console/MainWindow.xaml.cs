@@ -1,7 +1,5 @@
-﻿using Autofac;
-using DWS.Console.Asynchronous;
+﻿using DWS.Console.Asynchronous;
 using DWS.Console.Forms.TaskOverview;
-using Notification.Wpf;
 using System.Windows;
 
 namespace DWS.Console;

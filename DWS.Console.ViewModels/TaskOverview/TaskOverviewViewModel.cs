@@ -1,7 +1,4 @@
-﻿using DWS.Console.ViewModels.TaskOverview.NewTask;
-using DWS.Model;
-using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace DWS.Console.ViewModels.TaskOverview
 {

@@ -1,8 +1,4 @@
-using Autofac;
 using DWS.Model;
-using Jinaga;
-using System;
-using System.Threading.Tasks;
 
 namespace DWS.Console.Tests
 {

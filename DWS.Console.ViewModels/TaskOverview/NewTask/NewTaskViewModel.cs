@@ -1,8 +1,4 @@
-﻿using DWS.Model;
-using System;
-using System.Threading.Tasks;
-
-namespace DWS.Console.ViewModels.TaskOverview.NewTask;
+﻿namespace DWS.Console.ViewModels.TaskOverview.NewTask;
 
 public partial class NewTaskViewModel : ObservableObject
 {

@@ -1,5 +1,4 @@
-﻿using Autofac;
-using DWS.Console.Asynchronous;
+﻿using DWS.Console.Asynchronous;
 using System.Windows;
 using DWS.Console.ViewModels.TaskOverview.NewTask;
 

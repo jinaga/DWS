@@ -1,9 +1,7 @@
-﻿using Autofac;
-using DWS.Console.Asynchronous;
+﻿using DWS.Console.Asynchronous;
 using DWS.Console.Forms.TaskOverview.NewTask;
 using DWS.Console.ViewModels.TaskOverview;
 using DWS.Console.ViewModels.TaskOverview.NewTask;
-using Notifications.Wpf.ViewModels.Base;
 using System.Windows;
 
 namespace DWS.Console.Forms.TaskOverview

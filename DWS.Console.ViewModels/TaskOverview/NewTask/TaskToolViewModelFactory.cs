@@ -1,6 +1,3 @@
-using DWS.Model;
-using Jinaga;
-
 namespace DWS.Console.ViewModels.TaskOverview.NewTask;
 
 public class TaskToolViewModelFactory : ITaskToolViewModelFactory

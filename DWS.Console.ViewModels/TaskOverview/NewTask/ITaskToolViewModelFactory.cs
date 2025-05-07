@@ -1,5 +1,3 @@
-using DWS.Model;
-
 namespace DWS.Console.ViewModels.TaskOverview.NewTask;
 
 public interface ITaskToolViewModelFactory

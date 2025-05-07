@@ -1,11 +1,5 @@
-using Autofac;
 using DWS.Console.ViewModels.TaskOverview.NewTask;
 using DWS.Model;
-using FluentAssertions;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace DWS.Console.Tests.Areas.Tasks;
 

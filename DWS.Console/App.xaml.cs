@@ -1,7 +1,4 @@
 ﻿using Autofac;
-using Notification.Wpf;
-using System.Configuration;
-using System.Data;
 using System.Windows;
 
 namespace DWS.Console;
@@ -14,12 +11,7 @@ public partial class App : Application
 
     protected override void OnStartup(StartupEventArgs e)
     {
-        var notificationManager = new NotificationManager();
-
-        var client = JinagaConfig.Client;
         var builder = new ContainerBuilder();
-        builder.RegisterInstance(client);
-        builder.RegisterInstance(notificationManager);
         builder.RegisterModule<ConsoleModule>();
         container = builder.Build();
 

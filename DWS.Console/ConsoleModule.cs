@@ -15,6 +15,10 @@ class ConsoleModule: Module
             .AsSelf()
             .InstancePerDependency();
 
+        builder.RegisterType<MainWindow>()
+            .AsSelf()
+            .InstancePerDependency();
+
         builder.RegisterType<TaskOverviewWindow>()
             .AsSelf()
             .InstancePerDependency();

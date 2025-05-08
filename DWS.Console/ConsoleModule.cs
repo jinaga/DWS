@@ -1,6 +1,7 @@
 using Autofac;
 using DWS.Console.Asynchronous;
 using DWS.Console.Forms.TaskOverview;
+using DWS.Console.Forms.TaskOverview.NewTask;
 using DWS.Console.ViewModels;
 using Notification.Wpf;
 
@@ -22,13 +23,17 @@ class ConsoleModule: Module
 
         builder.RegisterType<CommandProcessor>()
             .AsSelf()
-            .InstancePerDependency();
+            .SingleInstance();
 
         builder.RegisterType<MainWindow>()
             .AsSelf()
-            .InstancePerDependency();
+            .SingleInstance();
 
         builder.RegisterType<TaskOverviewWindow>()
+            .AsSelf()
+            .InstancePerDependency();
+
+        builder.RegisterType<NewTaskDialog>()
             .AsSelf()
             .InstancePerDependency();
     }

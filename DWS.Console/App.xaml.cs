@@ -24,7 +24,7 @@ public partial class App : Application
         if (container != null)
         {
             container.Dispose();
-            container = null!;
+            container = null;
         }
     }
 }

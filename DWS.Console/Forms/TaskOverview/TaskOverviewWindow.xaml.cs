@@ -15,17 +15,15 @@ namespace DWS.Console.Forms.TaskOverview
     public partial class TaskOverviewWindow : Window
     {
         private readonly TaskOverviewViewModel taskOverviewviewModel;
-        private readonly CommandProcessor commandProcessor;
-        private readonly JinagaClient jinagaClient;
         private readonly Supplier supplier;
+        private readonly Func<Supplier, NewTaskDialog> newTaskDialogFactory;
 
-
-        public TaskOverviewWindow(TaskOverviewViewModel viewModel, CommandProcessor commandProcessor, JinagaClient jinagaClient, Supplier supplier)
+        public TaskOverviewWindow(TaskOverviewViewModel viewModel, Supplier supplier,
+            Func<Supplier, NewTaskDialog> newTaskDialogFactory)
         {
             this.taskOverviewviewModel = viewModel;
-            this.commandProcessor = commandProcessor;
-            this.jinagaClient = jinagaClient;
             this.supplier = supplier;
+            this.newTaskDialogFactory = newTaskDialogFactory;
             DataContext = taskOverviewviewModel;
             InitializeComponent();
         }
@@ -44,12 +42,8 @@ namespace DWS.Console.Forms.TaskOverview
 
         private void AddTask_Click(object sender, RoutedEventArgs e)
         {
-            commandProcessor.Run(async () =>
-            {               
-                var newTaskViewModel = new NewTaskViewModel(jinagaClient, supplier);
-                var newTaskDialog = new NewTaskDialog(newTaskViewModel, commandProcessor);
-                newTaskDialog.ShowDialog();
-            });
+            var newTaskDialog = newTaskDialogFactory(supplier);
+            newTaskDialog.ShowDialog();
         }
 
 

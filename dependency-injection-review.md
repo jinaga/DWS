@@ -55,11 +55,11 @@ notificationManager.Show(new NotificationContent { ... });
 
 ### 1. Register Child View Models in DI Container
 
-- [ ] Register YardViewModel in the DI container
-- [ ] Register ToolViewModel in the DI container
-- [ ] Register WorkerViewModel in the DI container
-- [ ] Inject factories for these view models into NewTaskViewModel
-- [ ] Update NewTaskViewModel to use the injected factories
+- [x] Register YardViewModel in the DI container
+- [x] Register ToolViewModel in the DI container
+- [x] Register WorkerViewModel in the DI container
+- [x] Inject factories for these view models into NewTaskViewModel
+- [x] Update NewTaskViewModel to use the injected factories
 
 ### 2. Create a JinagaClientFactory
 

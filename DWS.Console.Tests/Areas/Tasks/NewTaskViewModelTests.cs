@@ -11,7 +11,12 @@ public class NewTaskViewModelTests
         var jinagaClient = JinagaClient.Create();
         var supplier = await jinagaClient.Fact(new Supplier(new User("--- SUPPLIER CREATOR ---"), Guid.NewGuid()));
 
-        var viewModel = new NewTaskViewModel(jinagaClient, supplier);
+        var viewModel = new NewTaskViewModel(
+            jinagaClient, 
+            supplier,
+            yard => new YardViewModel(yard),
+            tool => new ToolViewModel(tool),
+            worker => new WorkerViewModel(worker));
         viewModel.Load();
         await viewModel.Ready();
 
@@ -27,7 +32,12 @@ public class NewTaskViewModelTests
         var tool1 = await jinagaClient.Fact(new Tool(supplier, Guid.NewGuid()));
         var tool2 = await jinagaClient.Fact(new Tool(supplier, Guid.NewGuid()));
 
-        var viewModel = new NewTaskViewModel(jinagaClient, supplier);
+        var viewModel = new NewTaskViewModel(
+            jinagaClient, 
+            supplier,
+            yard => new YardViewModel(yard),
+            tool => new ToolViewModel(tool),
+            worker => new WorkerViewModel(worker));
         viewModel.Load();
         await viewModel.Ready();
 
@@ -47,7 +57,12 @@ public class NewTaskViewModelTests
         var yard2 = await jinagaClient.Fact(new Yard(new Client(supplier, Guid.NewGuid()), Guid.NewGuid()));
         await jinagaClient.Fact(new YardName(yard2, "Yard 2", []));
 
-        var viewModel = new NewTaskViewModel(jinagaClient, supplier);
+        var viewModel = new NewTaskViewModel(
+            jinagaClient, 
+            supplier,
+            yard => new YardViewModel(yard),
+            tool => new ToolViewModel(tool),
+            worker => new WorkerViewModel(worker));
         viewModel.Load();
         await viewModel.Ready();
 
@@ -69,7 +84,12 @@ public class NewTaskViewModelTests
         await jinagaClient.Fact(new ToolName(tool2, "Hammer", []));
         await jinagaClient.Fact(new ToolName(tool3, "Screwdriver", []));
 
-        var viewModel = new NewTaskViewModel(jinagaClient, supplier);
+        var viewModel = new NewTaskViewModel(
+            jinagaClient, 
+            supplier,
+            yard => new YardViewModel(yard),
+            tool => new ToolViewModel(tool),
+            worker => new WorkerViewModel(worker));
         viewModel.Load();
         await viewModel.Ready();
 
@@ -89,7 +109,12 @@ public class NewTaskViewModelTests
         var tool2 = await jinagaClient.Fact(new Tool(supplier, Guid.NewGuid()));
         var tool3 = await jinagaClient.Fact(new Tool(supplier, Guid.NewGuid()));
 
-        var viewModel = new NewTaskViewModel(jinagaClient, supplier);
+        var viewModel = new NewTaskViewModel(
+            jinagaClient, 
+            supplier,
+            yard => new YardViewModel(yard),
+            tool => new ToolViewModel(tool),
+            worker => new WorkerViewModel(worker));
         viewModel.Load();
         await viewModel.Ready();
 
@@ -112,7 +137,12 @@ public class NewTaskViewModelTests
         var tool1 = await jinagaClient.Fact(new Tool(supplier, Guid.NewGuid()));
         var tool2 = await jinagaClient.Fact(new Tool(supplier, Guid.NewGuid()));
 
-        var viewModel = new NewTaskViewModel(jinagaClient, supplier);
+        var viewModel = new NewTaskViewModel(
+            jinagaClient, 
+            supplier,
+            yard => new YardViewModel(yard),
+            tool => new ToolViewModel(tool),
+            worker => new WorkerViewModel(worker));
         viewModel.Load();
         await viewModel.Ready();
 
@@ -140,7 +170,12 @@ public class NewTaskViewModelTests
         var supplier = await jinagaClient.Fact(new Supplier(new User("--- SUPPLIER CREATOR ---"), Guid.NewGuid()));
         var tool = await jinagaClient.Fact(new Tool(supplier, Guid.NewGuid()));
 
-        var viewModel = new NewTaskViewModel(jinagaClient, supplier);
+        var viewModel = new NewTaskViewModel(
+            jinagaClient, 
+            supplier,
+            yard => new YardViewModel(yard),
+            tool => new ToolViewModel(tool),
+            worker => new WorkerViewModel(worker));
         viewModel.Load();
         await viewModel.Ready();
 
@@ -161,7 +196,12 @@ public class NewTaskViewModelTests
         var tool2 = await jinagaClient.Fact(new Tool(supplier, Guid.NewGuid()));
         var tool3 = await jinagaClient.Fact(new Tool(supplier, Guid.NewGuid()));
 
-        var viewModel = new NewTaskViewModel(jinagaClient, supplier);
+        var viewModel = new NewTaskViewModel(
+            jinagaClient, 
+            supplier,
+            yard => new YardViewModel(yard),
+            tool => new ToolViewModel(tool),
+            worker => new WorkerViewModel(worker));
         viewModel.Load();
         await viewModel.Ready();
 
@@ -192,7 +232,12 @@ public class NewTaskViewModelTests
         var tool2 = await jinagaClient.Fact(new Tool(supplier, Guid.NewGuid()));
         var targetTool = await jinagaClient.Fact(new Tool(supplier, Guid.NewGuid()));
 
-        var viewModel = new NewTaskViewModel(jinagaClient, supplier);
+        var viewModel = new NewTaskViewModel(
+            jinagaClient, 
+            supplier,
+            yard => new YardViewModel(yard),
+            tool => new ToolViewModel(tool),
+            worker => new WorkerViewModel(worker));
         viewModel.Load();
         await viewModel.Ready();
 
@@ -217,7 +262,12 @@ public class NewTaskViewModelTests
         var tool2 = await jinagaClient.Fact(new Tool(supplier, Guid.NewGuid()));
         var targetTool = await jinagaClient.Fact(new Tool(supplier, Guid.NewGuid()));
 
-        var viewModel = new NewTaskViewModel(jinagaClient, supplier);
+        var viewModel = new NewTaskViewModel(
+            jinagaClient, 
+            supplier,
+            yard => new YardViewModel(yard),
+            tool => new ToolViewModel(tool),
+            worker => new WorkerViewModel(worker));
         viewModel.Load();
         await viewModel.Ready();
 

@@ -10,8 +10,11 @@ public record Supplier(User creator, Guid supplierGuid)
     );
 }
 
+
+
 [FactType("DWS.User.Name")]
 public record UserName(User user, string value, UserName[] prior);
+
 
 
 [FactType("DWS.Administrator")]
@@ -36,6 +39,8 @@ public record AdministratorRevoke(Administrator administrator, DateTime revokedD
 
 [FactType("DWS.Administator.Restore")]
 public record AdministatorRestore(AdministratorRevoke administratorRevoke);
+
+
 
 [FactType("DWS.Dispatcher")]
 public record Dispatcher(Supplier supplier, User user, DateTime createdDate)
@@ -83,6 +88,8 @@ public record WorkerRevoke(Worker worker, DateTime revokedDate);
 [FactType("DWS.Worker.Restore")]
 public record WorkerRestore(WorkerRevoke workerRevoke);
 
+
+
 [FactType("DWS.Client")]
 public record Client(Supplier supplier, Guid clientGuid)
 {
@@ -109,8 +116,10 @@ public record ClientRestore(ClientDelete clientDelete);
 [FactType("DWS.Client.Name")]
 public record ClientName(Client client, string value, ClientName[] prior);
 
+
+
 [FactType("DWS.Yard")]
-public record Yard(Client client, Guid yardGuid)
+public record Yard(Supplier supplier, Guid yardGuid)
 {
     public Relation<YardName> Names => Relation.Define(facts =>
       from yardName in facts.OfType<YardName>()
@@ -145,8 +154,10 @@ public record YardName(Yard yard, string value, YardName[] prior);
 [FactType("DWS.Yard.Address")]
 public record YardAddress(Yard yard, string street, string number, string postalCode, string place, string country, YardAddress[] prior);
 
+
+
 [FactType("DWS.Tool")]
-public record Tool(Supplier supplier, Guid toolGuid)
+public record Tool(Supplier supplier, Guid toolGuid, User creator)
 {
     public Relation<ToolName> Names => Relation.Define(facts =>
       from name in facts.OfType<ToolName>()
@@ -173,6 +184,53 @@ public record ToolName(Tool tool, string value, ToolName[] prior);
 
 [FactType("DWS.Tool.Approved")]
 public record ToolApproved(Tool tool);
+
+
+
+[FactType("DWS.Consumable")]
+public record Consumable(Supplier supplier, Guid consumableGuid, User Creator)
+{
+    public Relation<ConsumableName> Names => Relation.Define(facts =>
+      from name in facts.OfType<ConsumableName>()
+      where name.consumable == this &&
+        !facts.OfType<ConsumableName>().Any(next => next.prior.Contains(name))
+      select name
+    );
+
+    public Condition IsDeleted => Condition.Define(facts =>
+      facts.Any<ConsumableDelete>(delete => delete.consumable == this &&
+        !facts.Any<ConsumableRestore>(restore => restore.consumableDelete == delete)
+      )
+    );
+}
+
+[FactType("DWS.Consumable.Delete")]
+public record ConsumableDelete(Consumable consumable, DateTime deletedDate);
+
+[FactType("DWS.Consumable.Restore")]
+public record ConsumableRestore(ConsumableDelete consumableDelete);
+
+[FactType("DWS.Consumable.Name")]
+public record ConsumableName(Consumable consumable, string value, ConsumableName[] prior);
+
+[FactType("DWS.Consumable.Approved")]
+public record ConsumableApproved(Consumable consumable);
+
+
+
+[FactType("DWS.Unit")]
+public record Unit(Supplier supplier, Guid unitGuid);
+
+[FactType("DWS.Unit.Name")]
+public record UnitName(Unit unit, string unitName, string unitAbbreviation, UnitName[] prior);
+
+[FactType("DWS.Unit.UseForConsumables")]
+public record UseForConsumables(Unit unit, DateTime createdDate);
+
+[FactType("DWS.Unit.UseForConsumables.Delete")]
+public record UseForConsumablesDelete(UseForConsumables useForConsumables);
+
+
 
 [FactType("DWS.TypeOfWork")]
 public record TypeOfWork(Supplier supplier, Guid typeOfWorkGuid)
@@ -210,6 +268,8 @@ public record TypeOfWorkName(TypeOfWork typeOfWork, string value, TypeOfWorkName
 [FactType("DWS.TypeOfWork.Icon")]
 public record TypeOfWorkIcon(TypeOfWork typeOfWork, string hash, TypeOfWorkIcon[] prior);
 
+
+
 [FactType("DWS.TypeOfLeave")]
 public record TypeOfLeave(Supplier supplier, Guid typeOfLeaveGuid)
 {
@@ -246,76 +306,109 @@ public record TypeOfLeaveName(TypeOfLeave typeOfLeave, string value, TypeOfLeave
 [FactType("DWS.TypeOfLeave.Icon")]
 public record TypeOfLeaveIcon(TypeOfLeave typeOfLeave, string hash, TypeOfLeaveIcon[] prior);
 
+
+
+[FactType("DWS.SupplierPeriod")]
+public record SupplierPeriod(Supplier supplier, int year, int month);
+
 [FactType("DWS.Task")]
-public record DWSTask(Yard yard, Guid taskGuid)
+public record Task(SupplierPeriod supplierPeriod, User creator, Guid taskGuid)
 {
-    public Relation<TaskClientName> ClientNames => Relation.Define(facts =>
-      from name in facts.OfType<TaskClientName>()
-      where name.task == this &&
-        !facts.OfType<TaskClientName>().Any(next => next.prior.Contains(name))
-      select name
-    );
-
-    public Relation<TaskYardName> YardNames => Relation.Define(facts =>
-      from name in facts.OfType<TaskYardName>()
-      where name.task == this &&
-        !facts.OfType<TaskYardName>().Any(next => next.prior.Contains(name))
-      select name
-    );
-
-    public Relation<TaskYardAddress> YardAddresses => Relation.Define(facts =>
-      from address in facts.OfType<TaskYardAddress>()
-      where address.task == this &&
-        !facts.OfType<TaskYardAddress>().Any(next => next.prior.Contains(address))
-      select address
-    );
-
-    public Relation<TaskToolLookup> ToolLookups => Relation.Define(facts =>
-      from toolLookup in facts.OfType<TaskToolLookup>()
-      where toolLookup.task == this
-      select toolLookup
-    );
-
-    public Relation<TaskWorker> Workers => Relation.Define(facts =>
-      from worker in facts.OfType<TaskWorker>()
-      where worker.task == this
-      select worker
-    );
 
     public Condition IsDeleted => Condition.Define(facts =>
-      facts.Any<TaskDelete>(delete => delete.task == this &&
-        !facts.Any<TaskRestore>(restore => restore.taskDelete == delete)
-      )
-    );
+       facts.Any<TaskDelete>(delete => delete.task == this &&
+         !facts.Any<TaskRestore>(restore => restore.taskDelete == delete)
+       )
+     );
+
+
+    //  public Relation<TaskClientName> ClientNames => Relation.Define(facts =>
+    //   from name in facts.OfType<TaskClientName>()
+    //   where name.task == this &&
+    //     !facts.OfType<TaskClientName>().Any(next => next.prior.Contains(name))
+    //   select name
+    // );
+
+    // public Relation<TaskYardName> YardNames => Relation.Define(facts =>
+    //   from name in facts.OfType<TaskYardName>()
+    //   where name.task == this &&
+    //     !facts.OfType<TaskYardName>().Any(next => next.prior.Contains(name))
+    //   select name
+    // );
+
+    // public Relation<TaskYardAddress> YardAddresses => Relation.Define(facts =>
+    //   from address in facts.OfType<TaskYardAddress>()
+    //   where address.task == this &&
+    //     !facts.OfType<TaskYardAddress>().Any(next => next.prior.Contains(address))
+    //   select address
+    // );
+
+    // public Relation<TaskToolLookup> ToolLookups => Relation.Define(facts =>
+    //   from toolLookup in facts.OfType<TaskToolLookup>()
+    //   where toolLookup.task == this
+    //   select toolLookup
+    // );
+
+
+    // public Relation<TaskWorker> Workers => Relation.Define(facts =>
+    //   from worker in facts.OfType<TaskWorker>()
+    //   where worker.task == this
+    //   select worker
+    // );
+
 }
 
 [FactType("DWS.Task.Delete")]
-public record TaskDelete(DWSTask task, DateTime deletedDate);
+public record TaskDelete(Task task, DateTime deletedDate);
 
 [FactType("DWS.Task.Restore")]
 public record TaskRestore(TaskDelete taskDelete);
 
-[FactType("DWS.Task.ClientName")]
-public record TaskClientName(DWSTask task, string value, TaskClientName[] prior);
+[FactType("DWS.TaskInstructions")]
+public record TaskInstructions(Task task, string instructions, TaskInstructions[] prior);
 
-[FactType("DWS.Task.YardName")]
-public record TaskYardName(DWSTask task, string value, TaskYardName[] prior);
+[FactType("DWS.TaskFeedback")]
+public record TaskFeedback(Task task, string feedback, TaskFeedback[] prior);
 
-[FactType("DWS.Task.YardAddress")]
-public record TaskYardAddress(DWSTask task, string street, string number, string postalCode, string place, string country, TaskYardAddress[] prior);
+[FactType("DWS.Task-Client")]
+public record TaskClient(Task task, Client? client, TaskClient[] prior);
 
-[FactType("DWS.Task.Tool.Lookup")]
-public record TaskToolLookup(DWSTask task, Tool tool, DateTime createdDate);
 
-[FactType("DWS.Task.Tool.Lookup.Delete")]
-public record TaskToolLookupDelete(TaskToolLookup taskToolLookup);
+[FactType("DWS.Task-Yards")]
+public record TaskYards(Task task, Yard yard, DateTime createdDate);
 
-[FactType("DWS.Task.Tool.OnTheFly")]
-public record TaskToolOnTheFly(DWSTask task, string name, DateTime createdDate);
+[FactType("DWS.Task-Yards.Delete")]
+public record TaskYardsDelete(TaskYards taskYards);
 
-[FactType("DWS.Task.Tool.OnTheFly.Delete")]
-public record TaskToolOnTheFlyDelete(TaskToolOnTheFly taskToolOnTheFly);
 
-[FactType("DWS.Task.Worker")]
-public record TaskWorker(DWSTask task, Worker worker, TaskWorker[] prior);
+[FactType("DWS.Task-Tools")]
+public record TaskTools(Task task, Tool tool, DateTime createdDate);
+
+[FactType("DWS.Task-Tools.Delete")]
+public record TaskToolsDelete(TaskTools taskTools);
+
+
+[FactType("DWS.Task-Consumables")]
+public record TaskConsumables(Task task, Consumable consumable, DateTime createdDate);
+
+[FactType("DWS.Task-Consumables.AmountToBring")]
+public record TaskConsumablesAmountToBring(TaskConsumables taskConsumables, decimal amount, Unit unit, TaskConsumablesAmountToBring[] prior);
+
+[FactType("DWS.Task-Consumables.Delete")]
+public record TaskConsumablesDelete(TaskConsumables taskConsumables);
+
+
+[FactType("DWS.WorkerPeriod")]
+public record WorkerPeriod(Worker worker, int year, int month);
+
+
+[FactType("DWS.Task-Worker")]
+public record TaskWorker(Task task, WorkerPeriod? workerPeriod, TaskWorker[] prior, User creator);
+
+
+[FactType("DWS.Task.IsDone")]
+public record TaskIsDone(Task task, DateTime createdDate);
+
+[FactType("DWS.TaskIsDone.Delete")]
+public record TaskIsDoneDelete(TaskIsDone taskIsDone);
 

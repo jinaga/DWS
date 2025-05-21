@@ -312,7 +312,7 @@ public record TypeOfLeaveIcon(TypeOfLeave typeOfLeave, string hash, TypeOfLeaveI
 public record SupplierPeriod(Supplier supplier, int year, int month);
 
 [FactType("DWS.Task")]
-public record Task(SupplierPeriod supplierPeriod, User creator, Guid taskGuid)
+public record DWSTask(SupplierPeriod supplierPeriod, User creator, Guid taskGuid)
 {
 
     public Condition IsDeleted => Condition.Define(facts =>
@@ -359,37 +359,37 @@ public record Task(SupplierPeriod supplierPeriod, User creator, Guid taskGuid)
 }
 
 [FactType("DWS.Task.Delete")]
-public record TaskDelete(Task task, DateTime deletedDate);
+public record TaskDelete(DWSTask task, DateTime deletedDate);
 
 [FactType("DWS.Task.Restore")]
 public record TaskRestore(TaskDelete taskDelete);
 
 [FactType("DWS.TaskInstructions")]
-public record TaskInstructions(Task task, string instructions, TaskInstructions[] prior);
+public record TaskInstructions(DWSTask task, string instructions, TaskInstructions[] prior);
 
 [FactType("DWS.TaskFeedback")]
-public record TaskFeedback(Task task, string feedback, TaskFeedback[] prior);
+public record TaskFeedback(DWSTask task, string feedback, TaskFeedback[] prior);
 
 [FactType("DWS.Task-Client")]
-public record TaskClient(Task task, Client? client, TaskClient[] prior);
+public record TaskClient(DWSTask task, Client? client, TaskClient[] prior);
 
 
 [FactType("DWS.Task-Yards")]
-public record TaskYards(Task task, Yard yard, DateTime createdDate);
+public record TaskYards(DWSTask task, Yard yard, DateTime createdDate);
 
 [FactType("DWS.Task-Yards.Delete")]
 public record TaskYardsDelete(TaskYards taskYards);
 
 
 [FactType("DWS.Task-Tools")]
-public record TaskTools(Task task, Tool tool, DateTime createdDate);
+public record TaskTools(DWSTask task, Tool tool, DateTime createdDate);
 
 [FactType("DWS.Task-Tools.Delete")]
 public record TaskToolsDelete(TaskTools taskTools);
 
 
 [FactType("DWS.Task-Consumables")]
-public record TaskConsumables(Task task, Consumable consumable, DateTime createdDate);
+public record TaskConsumables(DWSTask task, Consumable consumable, DateTime createdDate);
 
 [FactType("DWS.Task-Consumables.AmountToBring")]
 public record TaskConsumablesAmountToBring(TaskConsumables taskConsumables, decimal amount, Unit unit, TaskConsumablesAmountToBring[] prior);
@@ -403,11 +403,11 @@ public record WorkerPeriod(Worker worker, int year, int month);
 
 
 [FactType("DWS.Task-Worker")]
-public record TaskWorker(Task task, WorkerPeriod? workerPeriod, TaskWorker[] prior, User creator);
+public record TaskWorker(DWSTask task, WorkerPeriod? workerPeriod, TaskWorker[] prior, User creator);
 
 
 [FactType("DWS.Task.IsDone")]
-public record TaskIsDone(Task task, DateTime createdDate);
+public record TaskIsDone(DWSTask task, DateTime createdDate);
 
 [FactType("DWS.TaskIsDone.Delete")]
 public record TaskIsDoneDelete(TaskIsDone taskIsDone);

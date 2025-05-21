@@ -22,5 +22,18 @@ public class ConsoleViewModelsModule : Module
             .AsSelf()
             .InstancePerDependency()
             .TransitiveFactory();
+            
+        // Register child view models
+        builder.RegisterType<YardViewModel>()
+            .AsSelf()
+            .InstancePerDependency();
+            
+        builder.RegisterType<ToolViewModel>()
+            .AsSelf()
+            .InstancePerDependency();
+            
+        builder.RegisterType<WorkerViewModel>()
+            .AsSelf()
+            .InstancePerDependency();
     }
 }

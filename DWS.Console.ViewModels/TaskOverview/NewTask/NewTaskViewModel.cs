@@ -7,6 +7,9 @@ public partial class NewTaskViewModel : ObservableObject
 {
     private readonly JinagaClient jinagaClient;
     private readonly Supplier supplier;
+    private readonly Func<Yard, YardViewModel> yardFactory;
+    private readonly Func<Tool, ToolViewModel> toolFactory;
+    private readonly Func<Worker, WorkerViewModel> workerFactory;
 
     public ObservableCollection<YardViewModel> Yards { get; } = [];
     public ObservableCollection<ToolViewModel> ToolCatalog { get; } = [];
@@ -29,10 +32,18 @@ public partial class NewTaskViewModel : ObservableObject
     [ObservableProperty]
     private YardViewModel? selectedYard;
 
-    public NewTaskViewModel(JinagaClient jinagaClient, Supplier supplier)
+    public NewTaskViewModel(
+        JinagaClient jinagaClient, 
+        Supplier supplier,
+        Func<Yard, YardViewModel> yardFactory,
+        Func<Tool, ToolViewModel> toolFactory,
+        Func<Worker, WorkerViewModel> workerFactory)
     {
         this.jinagaClient = jinagaClient;
         this.supplier = supplier;
+        this.yardFactory = yardFactory;
+        this.toolFactory = toolFactory;
+        this.workerFactory = workerFactory;
     }
 
     public void Load()
@@ -90,7 +101,7 @@ public partial class NewTaskViewModel : ObservableObject
 
         yardObserver = jinagaClient.Watch(yardsInSupplier, supplier, yardProjection =>
         {
-            YardViewModel yard = new YardViewModel(yardProjection.yard);
+            YardViewModel yard = yardFactory(yardProjection.yard);
             Yards.Add(yard);
 
             yardProjection.clientNames.OnAdded(name =>
@@ -130,7 +141,7 @@ public partial class NewTaskViewModel : ObservableObject
 
         toolObserver = jinagaClient.Watch(toolsInSupplier, supplier, toolProjection =>
         {
-            ToolViewModel tool = new ToolViewModel(toolProjection.tool);
+            ToolViewModel tool = toolFactory(toolProjection.tool);
             ToolCatalog.Insert(0, tool);
 
             toolProjection.toolNames.OnAdded(name =>
@@ -163,7 +174,7 @@ public partial class NewTaskViewModel : ObservableObject
 
         workerObserver = jinagaClient.Watch(workersInSupplier, supplier, workerProjection =>
         {
-            WorkerViewModel worker = new WorkerViewModel(workerProjection.worker);
+            WorkerViewModel worker = workerFactory(workerProjection.worker);
             Workers.Add(worker);
 
             workerProjection.workerNames.OnAdded(name =>

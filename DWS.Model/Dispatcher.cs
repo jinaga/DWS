@@ -154,6 +154,17 @@ public record YardName(Yard yard, string value, YardName[] prior);
 [FactType("DWS.Yard.Address")]
 public record YardAddress(Yard yard, string street, string number, string postalCode, string place, string country, YardAddress[] prior);
 
+[FactType("DWS.Yard-Clients")]
+public record YardClients(Yard yard, Client client, DateTime createdDate)
+{
+    public Condition IsDeleted => Condition.Define(facts =>
+        facts.Any<YardClientsDelete>(delete => delete.yardClients == this)
+    );
+}
+
+[FactType("DWS.Yard-Clients.Delete")]
+public record YardClientsDelete(YardClients yardClients);
+
 
 
 [FactType("DWS.Tool")]

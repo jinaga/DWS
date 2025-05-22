@@ -20,8 +20,8 @@ static class JinagaConfig
         });
 
         await CreateSampleTools(jinagaClient, supplier);
-        await CreateSampleClients(jinagaClient, supplier);
         await CreateSampleWorkers(jinagaClient, supplier);
+        await CreateSampleClientsAndYards(jinagaClient, supplier);   
 
         return supplier;
     }
@@ -54,16 +54,24 @@ static class JinagaConfig
 
         async Task CreateTool(string name)
         {
-            var tool = await jinagaClient.Fact(new Tool(supplier, Guid.NewGuid()));
+            var user = await jinagaClient.Fact(new User("PK_Jan"));
+            var tool = await jinagaClient.Fact(new Tool(supplier, Guid.NewGuid(), user));
             await jinagaClient.Fact(new ToolName(tool, name, []));
         }
     }
 
-    private static async Task CreateSampleClients(JinagaClient jinagaClient, Supplier supplier)
+    private static async Task CreateSampleClientsAndYards(JinagaClient jinagaClient, Supplier supplier)
     {
         var clientA = await jinagaClient.Fact(new Client(supplier, Guid.NewGuid()));
         await jinagaClient.Fact(new ClientName(clientA, "Client A", []));
-        var yardA1 = await jinagaClient.Fact(new Yard(clientA, Guid.NewGuid()));
+        
+        var clientB = await jinagaClient.Fact(new Client(supplier, Guid.NewGuid()));
+        await jinagaClient.Fact(new ClientName(clientB, "Client B", []));
+
+        var clientC = await jinagaClient.Fact(new Client(supplier, Guid.NewGuid()));
+        await jinagaClient.Fact(new ClientName(clientB, "Client C", []));
+
+        var yardA1 = await jinagaClient.Fact(new Yard(supplier, Guid.NewGuid()));
         await jinagaClient.Fact(new YardName(yardA1, "Yard A1", []));
         await jinagaClient.Fact(new YardAddress(
             yardA1,
@@ -74,9 +82,7 @@ static class JinagaConfig
             "USA",
             []));
 
-        var clientB = await jinagaClient.Fact(new Client(supplier, Guid.NewGuid()));
-        await jinagaClient.Fact(new ClientName(clientB, "Client B", []));
-        var yardB1 = await jinagaClient.Fact(new Yard(clientB, Guid.NewGuid()));
+        var yardB1 = await jinagaClient.Fact(new Yard(supplier, Guid.NewGuid()));
         await jinagaClient.Fact(new YardName(yardB1, "Yard B1", []));
         await jinagaClient.Fact(new YardAddress(
             yardB1,
@@ -86,7 +92,8 @@ static class JinagaConfig
             "Othertown",
             "USA",
             []));
-        var yardB2 = await jinagaClient.Fact(new Yard(clientB, Guid.NewGuid()));
+
+        var yardB2 = await jinagaClient.Fact(new Yard(supplier, Guid.NewGuid()));
         await jinagaClient.Fact(new YardName(yardB2, "Yard B2", []));
         await jinagaClient.Fact(new YardAddress(
             yardB2,
@@ -96,5 +103,23 @@ static class JinagaConfig
             "Another Town",
             "USA",
             []));
+
+        var yardB3C1 = await jinagaClient.Fact(new Yard(supplier, Guid.NewGuid()));
+        await jinagaClient.Fact(new YardName(yardB2, "Yard B3C1", []));
+        await jinagaClient.Fact(new YardAddress(
+            yardB3C1,
+            "Unknown Street",
+            "7",
+            "8645",
+            "ThisTown",
+            "USA",
+            []));
+
+        await jinagaClient.Fact(new YardClients(yardA1, clientA, DateTime.UtcNow));
+        await jinagaClient.Fact(new YardClients(yardB1, clientB, DateTime.UtcNow));
+        await jinagaClient.Fact(new YardClients(yardB2, clientB, DateTime.UtcNow));
+        await jinagaClient.Fact(new YardClients(yardB3C1, clientB, DateTime.UtcNow));
+        await jinagaClient.Fact(new YardClients(yardB3C1, clientC, DateTime.UtcNow));
     }
+
 }

@@ -333,39 +333,39 @@ public record DWSTask(SupplierPeriod supplierPeriod, User creator, Guid taskGuid
      );
 
 
-    //  public Relation<TaskClientName> ClientNames => Relation.Define(facts =>
-    //   from name in facts.OfType<TaskClientName>()
-    //   where name.task == this &&
-    //     !facts.OfType<TaskClientName>().Any(next => next.prior.Contains(name))
-    //   select name
-    // );
+    public Relation<TaskClientName> ClientNames => Relation.Define(facts =>
+     from name in facts.OfType<TaskClientName>()
+     where name.task == this &&
+       !facts.OfType<TaskClientName>().Any(next => next.prior.Contains(name))
+     select name
+   );
 
-    // public Relation<TaskYardName> YardNames => Relation.Define(facts =>
-    //   from name in facts.OfType<TaskYardName>()
-    //   where name.task == this &&
-    //     !facts.OfType<TaskYardName>().Any(next => next.prior.Contains(name))
-    //   select name
-    // );
+   public Relation<TaskYardName> YardNames => Relation.Define(facts =>
+     from name in facts.OfType<TaskYardName>()
+     where name.task == this &&
+       !facts.OfType<TaskYardName>().Any(next => next.prior.Contains(name))
+     select name
+   );
 
-    // public Relation<TaskYardAddress> YardAddresses => Relation.Define(facts =>
-    //   from address in facts.OfType<TaskYardAddress>()
-    //   where address.task == this &&
-    //     !facts.OfType<TaskYardAddress>().Any(next => next.prior.Contains(address))
-    //   select address
-    // );
+   public Relation<TaskYardAddress> YardAddresses => Relation.Define(facts =>
+     from address in facts.OfType<TaskYardAddress>()
+     where address.task == this &&
+       !facts.OfType<TaskYardAddress>().Any(next => next.prior.Contains(address))
+     select address
+   );
 
-    // public Relation<TaskToolLookup> ToolLookups => Relation.Define(facts =>
-    //   from toolLookup in facts.OfType<TaskToolLookup>()
-    //   where toolLookup.task == this
-    //   select toolLookup
-    // );
+   public Relation<TaskToolLookup> ToolLookups => Relation.Define(facts =>
+     from toolLookup in facts.OfType<TaskToolLookup>()
+     where toolLookup.task == this
+     select toolLookup
+   );
 
 
-    // public Relation<TaskWorker> Workers => Relation.Define(facts =>
-    //   from worker in facts.OfType<TaskWorker>()
-    //   where worker.task == this
-    //   select worker
-    // );
+   public Relation<TaskWorker> Workers => Relation.Define(facts =>
+     from worker in facts.OfType<TaskWorker>()
+     where worker.task == this
+     select worker
+   );
 
 }
 
@@ -422,4 +422,19 @@ public record TaskIsDone(DWSTask task, DateTime createdDate);
 
 [FactType("DWS.TaskIsDone.Delete")]
 public record TaskIsDoneDelete(TaskIsDone taskIsDone);
+
+[FactType("DWS.TaskClientName")]
+public record TaskClientName(DWSTask task, string value, TaskClientName[] prior);
+
+[FactType("DWS.TaskYardName")]
+public record TaskYardName(DWSTask task, string value, TaskYardName[] prior);
+
+[FactType("DWS.TaskYardAddress")]
+public record TaskYardAddress(DWSTask task, string street, string number, string postalCode, string place, string country, TaskYardAddress[] prior);
+
+[FactType("DWS.TaskToolLookup")]
+public record TaskToolLookup(DWSTask task, Tool tool, DateTime createdDate);
+
+[FactType("DWS.TaskToolOnTheFly")]
+public record TaskToolOnTheFly(DWSTask task, string toolName, DateTime createdDate);
 

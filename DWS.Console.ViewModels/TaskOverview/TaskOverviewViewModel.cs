@@ -1,4 +1,6 @@
-﻿namespace DWS.Console.ViewModels.TaskOverview;
+﻿using DWS.Model;
+
+namespace DWS.Console.ViewModels.TaskOverview;
 
 public partial class TaskOverviewViewModel: ObservableObject
 {
@@ -42,17 +44,27 @@ public partial class TaskOverviewViewModel: ObservableObject
     private void LoadTasks()
     {
         var tasksInSupplier = Given<Supplier>.Match((supplier, facts) =>
-            from client in facts.OfType<Client>()
-            where client.supplier == supplier && !client.IsDeleted  
             from yard in facts.OfType<Yard>()
-            where yard.client == client && !yard.IsDeleted      
+            where yard.supplier == supplier && !yard.IsDeleted      
+            from yardClients in facts.OfType<YardClients>()
+            where yardClients.yard == yard && !yardClients.IsDeleted
+            from client in facts.OfType<Client>()
+            where client == yardClients.client && !client.IsDeleted
             from DWSTask in facts.OfType<DWSTask>()
-            where DWSTask.yard == yard && !DWSTask.IsDeleted    
+            where DWSTask.supplierPeriod.supplier == supplier && !DWSTask.IsDeleted    
             select new
             { 
                 DWSTask,
-                clientNames = facts.Observable(DWSTask.ClientNames.Select(name => name.value)),
-                yardNames = facts.Observable(DWSTask.YardNames.Select(name => name.value))
+                clientNames = facts.Observable(client.Names.Select(name => name.value)),
+                yardNames = facts.Observable(DWSTask.YardNames.Select(name => name.value)),
+                yardAddresses = facts.Observable(yard.Addresses.Select(address => new
+                {
+                    street = address.street,
+                    number = address.number,
+                    postalCode = address.postalCode,
+                    city = address.place,
+                    country = address.country
+                }))
             } 
         );
 
@@ -69,6 +81,15 @@ public partial class TaskOverviewViewModel: ObservableObject
             taskProjection.yardNames.OnAdded(name =>
             {
                 task.YardName = name;
+            });
+
+            taskProjection.yardAddresses.OnAdded(address =>
+            {
+                task.Street = address.street;
+                task.Number = address.number;
+                task.PostalCode = address.postalCode;
+                task.City = address.city;
+                task.Country = address.country;
             });
 
            

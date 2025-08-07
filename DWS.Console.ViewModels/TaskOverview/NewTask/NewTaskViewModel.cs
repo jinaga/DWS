@@ -27,6 +27,21 @@ public partial class NewTaskViewModel : ObservableObject
     private string yardName = string.Empty;
 
     [ObservableProperty]
+    private string street = string.Empty;
+
+    [ObservableProperty]
+    private string number = string.Empty;
+
+    [ObservableProperty]
+    private string postalCode = string.Empty;
+
+    [ObservableProperty]
+    private string city = string.Empty;
+
+    [ObservableProperty]
+    private string country = string.Empty;
+
+    [ObservableProperty]
     private WorkerViewModel? selectedWorker;    
 
     [ObservableProperty]
@@ -79,10 +94,12 @@ public partial class NewTaskViewModel : ObservableObject
     private void LoadYards()
     {
         var yardsInSupplier = Given<Supplier>.Match((supplier, facts) =>
-          from client in facts.OfType<Client>()
-          where client.supplier == supplier
           from yard in facts.OfType<Yard>()
-          where yard.client == client && !yard.IsDeleted
+          where yard.supplier == supplier && !yard.IsDeleted
+          from yardClients in facts.OfType<YardClients>()
+          where yardClients.yard == yard && !yardClients.IsDeleted
+          from client in facts.OfType<Client>()
+          where client == yardClients.client && !client.IsDeleted
           select new
           {
               yard = yard,
@@ -280,6 +297,13 @@ public partial class NewTaskViewModel : ObservableObject
     partial void OnSelectedYardChanged(YardViewModel? value)
     {
         YardName = value?.YardName ?? string.Empty;
+        
+        // Add address population
+        Street = value?.Street ?? string.Empty;
+        Number = value?.Number ?? string.Empty;
+        PostalCode = value?.PostalCode ?? string.Empty;
+        City = value?.City ?? string.Empty;
+        Country = value?.Country ?? string.Empty;
     }
 
     public async Task Save()
@@ -288,23 +312,32 @@ public partial class NewTaskViewModel : ObservableObject
 
         if (selectedYard == null)
         {
+            var yard = await jinagaClient.Fact(new Yard(supplier, Guid.NewGuid()));
+            await jinagaClient.Fact(new YardName(yard, YardName, []));
+            
+            // Create client and associate it with the yard
             var client = await jinagaClient.Fact(new Client(supplier, Guid.NewGuid()));
             await jinagaClient.Fact(new ClientName(client, ClientName, []));
-            var yard = await jinagaClient.Fact(new Yard(client, Guid.NewGuid()));
-            await jinagaClient.Fact(new YardName(yard, YardName, []));
+            await jinagaClient.Fact(new YardClients(yard, client, DateTime.UtcNow));
+            
+            // TODO: Add address to the yard
+            // Use the correct Jinaga mutable property pattern
+            // await jinagaClient.Fact(new YardAddress(yard, Street, Number, PostalCode, City, Country, []));
+            
             selectedYard = yard;
-
         }
 
         // Create the task
-        var task = await jinagaClient.Fact(new DWSTask(selectedYard, Guid.NewGuid()));
+        var supplierPeriod = await jinagaClient.Fact(new SupplierPeriod(supplier, DateTime.UtcNow.Year, DateTime.UtcNow.Month));
+        var task = await jinagaClient.Fact(new DWSTask(supplierPeriod, supplier.creator, Guid.NewGuid()));
 
         // Set the properties of the task
         await jinagaClient.Fact(new TaskClientName(task, ClientName, []));
         await jinagaClient.Fact(new TaskYardName(task, YardName, []));
         if (SelectedWorker != null)
         {
-            await jinagaClient.Fact(new TaskWorker(task, SelectedWorker.Worker, []));
+            var workerPeriod = await jinagaClient.Fact(new WorkerPeriod(SelectedWorker.Worker, DateTime.UtcNow.Year, DateTime.UtcNow.Month));
+            await jinagaClient.Fact(new TaskWorker(task, workerPeriod, [], supplier.creator));
         }
         
 

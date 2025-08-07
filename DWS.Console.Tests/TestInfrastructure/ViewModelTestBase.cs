@@ -37,7 +37,8 @@ public abstract class ViewModelTestBase
     
     protected async Task<Tool> GivenTool(Supplier supplier, string? name = null)
     {
-        var tool = await JinagaClient.Fact(new Tool(supplier, Guid.NewGuid()));
+        var creator = new User("--- TOOL CREATOR ---");
+        var tool = await JinagaClient.Fact(new Tool(supplier, Guid.NewGuid(), creator));
         if (name != null)
         {
             await JinagaClient.Fact(new ToolName(tool, name, []));
@@ -47,8 +48,7 @@ public abstract class ViewModelTestBase
     
     protected async Task<Yard> GivenYard(Supplier supplier, string? name = null)
     {
-        var client = await JinagaClient.Fact(new Client(supplier, Guid.NewGuid()));
-        var yard = await JinagaClient.Fact(new Yard(client, Guid.NewGuid()));
+        var yard = await JinagaClient.Fact(new Yard(supplier, Guid.NewGuid()));
         if (name != null)
         {
             await JinagaClient.Fact(new YardName(yard, name, []));

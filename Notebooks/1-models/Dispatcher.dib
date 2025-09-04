@@ -653,7 +653,7 @@ Renderer.RenderTypes(
                         typeof(Dispatcher), typeof(DispatcherRevoke), typeof(DispatcherRestore),
                         typeof(Worker), typeof(WorkerRevoke), typeof(WorkerRestore),
                         typeof(Client), typeof(ClientDelete), typeof(ClientRestore), typeof(ClientName),
-                        typeof(Yard), typeof(YardDelete), typeof(YardRestore), typeof(YardName), typeof(YardAddress),
+                        typeof(Yard), typeof(YardDelete), typeof(YardRestore), typeof(YardName), typeof(YardAddress),  typeof(YardClientsDelete),
                         typeof(ClientCRM), typeof(CRMClient), typeof(YardCRM), typeof(YardCRMAddress),
                         typeof(Tool), typeof(ToolDelete), typeof(ToolRestore), typeof(ToolName), typeof(ToolApproved),
                         typeof(Consumable), typeof(ConsumableDelete), typeof(ConsumableRestore), typeof(ConsumableName), typeof(ConsumableApproved),

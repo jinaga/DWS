@@ -1,0 +1,116 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"name":"csharp","languageName":"C#","aliases":["c#","cs"]},{"name":"fsharp","languageName":"F#","aliases":["f#","fs"]},{"name":"html","languageName":"HTML"},{"name":"http","languageName":"HTTP"},{"name":"javascript","languageName":"JavaScript","aliases":["js"]},{"name":"mermaid","languageName":"Mermaid"},{"name":"pwsh","languageName":"PowerShell","aliases":["powershell"]},{"name":"value"}]}}
+
+#!csharp
+
+#!import "../1-models/Dispatcher.dib"
+#!import "../0-setup/Client.dib"
+
+#!csharp
+
+var creator = await jinagaClient.Fact(new User("----SINGLE USE PRINCIPAL----"));
+var supplier = await jinagaClient.Fact(new Supplier(creator, Guid.NewGuid()));
+var clientA = await jinagaClient.Fact(new Client(supplier, Guid.NewGuid()));
+var clientAName = await jinagaClient.Fact(new ClientName(clientA, "Client A", []));
+
+var yardA1 = await jinagaClient.Fact(new Yard(clientA, Guid.NewGuid()));
+var yardA1Name = await jinagaClient.Fact(new YardName(yardA1, "A1", []));
+var yardA1Address = await jinagaClient.Fact(new YardAddress(yardA1, "Main St", "123", "12345", "Anytown", "France", []));
+
+var yardA2 = await jinagaClient.Fact(new Yard(clientA, Guid.NewGuid()));
+var yardA2Name = await jinagaClient.Fact(new YardName(yardA2, "A2", []));
+var yardA2Address = await jinagaClient.Fact(new YardAddress(yardA2, "Somewhere St", "456", "45678", "Anytown", "France", []));
+
+var clientB = await jinagaClient.Fact(new Client(supplier, Guid.NewGuid()));
+var clientBName = await jinagaClient.Fact(new ClientName(clientB, "Client B", []));
+
+var yardB1 = await jinagaClient.Fact(new Yard(clientB, Guid.NewGuid()));
+var yardB1Name = await jinagaClient.Fact(new YardName(yardB1, "B1", []));
+var yardB1Address = await jinagaClient.Fact(new YardAddress(yardB1, "Another St", "789", "12345", "Anytown", "France", []));
+
+jinagaClient.RenderFacts(clientAName, yardA1Name, yardA1Address, yardA2Name, yardA2Address, clientBName, yardB1Name, yardB1Address)
+
+#!markdown
+
+## Drop-Down List of Clients (and Yards)
+
+The list displays one row per yard.
+
+#!csharp
+
+var yardsInSupplier = Given<Supplier>.Match((supplier, facts) =>
+  from client in facts.OfType<Client>()
+  where client.supplier == supplier
+  from yard in facts.OfType<Yard>()
+  where yard.client == client && !yard.IsDeleted
+  select new
+  {
+    clientNames = client.Names.Select(name => name.value),
+    yardNames = yard.Names.Select(name => name.value),
+    yardAddresses = yard.Addresses.Select(address => new
+      {
+        street = address.street,
+        number = address.number,
+        postalCode = address.postalCode,
+        city = address.place,
+        country = address.country
+      })
+  }
+);
+
+var yards = await jinagaClient.Query(yardsInSupplier, supplier);
+
+var yardViewModels =
+  from yard in yards
+  let clientName = yard.clientNames.FirstOrDefault()
+  let yardName = yard.yardNames.FirstOrDefault()
+  let yardAddress = yard.yardAddresses.FirstOrDefault()
+  select new
+  {
+    yard,
+    clientName = clientName ?? "Unknown client",
+    yardName = yardName ?? "Unknown yard",
+    street = yardAddress?.street ?? "Unknown street",
+    number = yardAddress?.number ?? "Unknown number",
+    postalCode = yardAddress?.postalCode ?? "Unknown postal code",
+    city = yardAddress?.city ?? "Unknown city",
+    country = yardAddress?.country ?? "Unknown country"
+  };
+
+yardViewModels
+
+#!markdown
+
+## Worker Drop-Down
+
+Displays all workers for the supplier.
+
+#!csharp
+
+var workersInSupplier = Given<Supplier>.Match((supplier, facts) =>
+  from worker in facts.OfType<Worker>()
+  where worker.supplier == supplier
+  select new
+  {
+    worker,
+    Names =
+      from userName in facts.OfType<UserName>()
+      where userName.user == worker.user &&
+        !facts.Any<UserName>(next => next.prior.Contains(userName))
+      select userName.value
+  }
+);
+
+var workers = await jinagaClient.Query(workersInSupplier, supplier);
+
+var workerViewModels =
+  from worker in workers
+  let name = worker.Names.FirstOrDefault()
+  select new
+  {
+    worker,
+    name = name ?? "Unknown worker"
+  };
+
+workerViewModels

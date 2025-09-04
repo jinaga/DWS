@@ -1,0 +1,16 @@
+#!meta
+
+{"kernelInfo":{"defaultKernelName":"csharp","items":[{"name":"csharp","languageName":"C#","aliases":["c#","cs"]},{"name":"fsharp","languageName":"F#","aliases":["f#","fs"]},{"name":"html","languageName":"HTML"},{"name":"http","languageName":"HTTP"},{"name":"javascript","languageName":"JavaScript","aliases":["js"]},{"name":"mermaid","languageName":"Mermaid"},{"name":"pwsh","languageName":"PowerShell","aliases":["powershell"]},{"name":"value"}]}}
+
+#!csharp
+
+#!import "../0-setup/Packages.dib"
+
+#!csharp
+
+// Create a Jinaga client for unit testing
+var jinagaClient = JinagaTest.Create(opt =>
+{
+    // Simulate a logged in user
+    opt.User = new User("--- FAKE USER ---");
+});

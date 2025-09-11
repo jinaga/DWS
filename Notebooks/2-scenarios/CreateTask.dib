@@ -11,39 +11,69 @@
 
 var creator = await jinagaClient.Fact(new User("----SINGLE USE PRINCIPAL----"));
 var supplier = await jinagaClient.Fact(new Supplier(creator, Guid.NewGuid()));
+
+
 var clientA = await jinagaClient.Fact(new Client(supplier, Guid.NewGuid()));
 var clientAName = await jinagaClient.Fact(new ClientName(clientA, "Client A", []));
-
-var yardA1 = await jinagaClient.Fact(new Yard(clientA, Guid.NewGuid()));
-var yardA1Name = await jinagaClient.Fact(new YardName(yardA1, "A1", []));
-var yardA1Address = await jinagaClient.Fact(new YardAddress(yardA1, "Main St", "123", "12345", "Anytown", "France", []));
-
-var yardA2 = await jinagaClient.Fact(new Yard(clientA, Guid.NewGuid()));
-var yardA2Name = await jinagaClient.Fact(new YardName(yardA2, "A2", []));
-var yardA2Address = await jinagaClient.Fact(new YardAddress(yardA2, "Somewhere St", "456", "45678", "Anytown", "France", []));
 
 var clientB = await jinagaClient.Fact(new Client(supplier, Guid.NewGuid()));
 var clientBName = await jinagaClient.Fact(new ClientName(clientB, "Client B", []));
 
-var yardB1 = await jinagaClient.Fact(new Yard(clientB, Guid.NewGuid()));
-var yardB1Name = await jinagaClient.Fact(new YardName(yardB1, "B1", []));
-var yardB1Address = await jinagaClient.Fact(new YardAddress(yardB1, "Another St", "789", "12345", "Anytown", "France", []));
+var clientC = await jinagaClient.Fact(new Client(supplier, Guid.NewGuid()));
+var clientCName = await jinagaClient.Fact(new ClientName(clientC, "Client C", []));
 
-jinagaClient.RenderFacts(clientAName, yardA1Name, yardA1Address, yardA2Name, yardA2Address, clientBName, yardB1Name, yardB1Address)
+var clientD = await jinagaClient.Fact(new Client(supplier, Guid.NewGuid()));
+var clientDName = await jinagaClient.Fact(new ClientName(clientD, "Client D", []));
+
+
+var yardA1 = await jinagaClient.Fact(new Yard(supplier, Guid.NewGuid()));
+var yardA1Name = await jinagaClient.Fact(new YardName(yardA1, "A1", []));
+var yardA1Address = await jinagaClient.Fact(new YardAddress(yardA1, "Main Street", "1", "12345", "Anytown", "USA", []));
+
+var yardB1 = await jinagaClient.Fact(new Yard(supplier, Guid.NewGuid()));
+var yardB1Name = await jinagaClient.Fact(new YardName(yardB1, "B1", []));
+var yardB1Address = await jinagaClient.Fact(new YardAddress(yardB1, "Second Street", "2", "23456", "Othertown", "USA", []));
+
+var yardB2 = await jinagaClient.Fact(new Yard(supplier, Guid.NewGuid()));
+var yardB2Name = await jinagaClient.Fact(new YardName(yardB2, "B2", []));
+var yardB2Address = await jinagaClient.Fact(new YardAddress(yardB2, "Third Street", "3", "34567", "Another town", "USA", []));
+
+var yardB3C1 = await jinagaClient.Fact(new Yard(supplier, Guid.NewGuid()));
+var yardB3C1Name = await jinagaClient.Fact(new YardName(yardB3C1, "B3C1", []));
+var yardB3C1Address = await jinagaClient.Fact(new YardAddress(yardB3C1, "Unknown Street", "7", "8645", "ThisTown", "USA", []));
+
+var yardX = await jinagaClient.Fact(new Yard(supplier, Guid.NewGuid()));
+var yardXName = await jinagaClient.Fact(new YardName(yardX, "X", []));
+var yardXAddress = await jinagaClient.Fact(new YardAddress(yardX, "X Street", "X", "XXXXX", "Xtown", "USA", []));
+
+var yardClientsA1_A = await jinagaClient.Fact(new YardClients(yardA1, clientA, DateTime.UtcNow));
+var yardClientsB1_B = await jinagaClient.Fact(new YardClients(yardB1, clientB, DateTime.UtcNow));
+var yardClientsB2_B = await jinagaClient.Fact(new YardClients(yardB2, clientB, DateTime.UtcNow));
+var yardClientsB3C1_B = await jinagaClient.Fact(new YardClients(yardB3C1, clientB, DateTime.UtcNow));
+var yardClientsB3C1_C = await jinagaClient.Fact(new YardClients(yardB3C1, clientC, DateTime.UtcNow));
+
+var yardClientsA1_B = await jinagaClient.Fact(new YardClients(yardA1, clientB, DateTime.UtcNow));
+var yardClientsA1_Delete = await jinagaClient.Fact(new YardClientsDelete(yardClientsA1_B));
+
+
+jinagaClient.RenderFacts(clientAName, clientBName, clientCName, clientDName, yardA1Name, yardA1Address, yardB1Name, yardB1Address, yardB2Name, yardB2Address, yardB3C1Name, yardB3C1Address,  yardXName, yardXAddress,yardClientsA1_A, yardClientsB1_B, yardClientsB2_B,yardClientsB3C1_B, yardClientsB3C1_C, yardClientsA1_Delete )
 
 #!markdown
 
 ## Drop-Down List of Clients (and Yards)
 
-The list displays one row per yard.
+ Here we have an inner-join of clients and yards, because every result has to fullfill all conditions from lines 2 -> 7
 
 #!csharp
 
 var yardsInSupplier = Given<Supplier>.Match((supplier, facts) =>
   from client in facts.OfType<Client>()
-  where client.supplier == supplier
+  where client.supplier == supplier && !client.IsDeleted
+  from yardClients in facts.OfType<YardClients>()
+  where yardClients.client == client && !yardClients.IsDeleted
   from yard in facts.OfType<Yard>()
-  where yard.client == client && !yard.IsDeleted
+  where yard.supplier == supplier && !yard.IsDeleted && yard == yardClients.yard
+
   select new
   {
     clientNames = client.Names.Select(name => name.value),
@@ -63,13 +93,13 @@ var yards = await jinagaClient.Query(yardsInSupplier, supplier);
 
 var yardViewModels =
   from yard in yards
-  let clientName = yard.clientNames.FirstOrDefault()
+  // let clientName = yard.clientNames.FirstOrDefault()
   let yardName = yard.yardNames.FirstOrDefault()
   let yardAddress = yard.yardAddresses.FirstOrDefault()
   select new
   {
     yard,
-    clientName = clientName ?? "Unknown client",
+    // clientName = clientName ?? "Unknown client",
     yardName = yardName ?? "Unknown yard",
     street = yardAddress?.street ?? "Unknown street",
     number = yardAddress?.number ?? "Unknown number",
@@ -79,6 +109,293 @@ var yardViewModels =
   };
 
 yardViewModels
+
+#!markdown
+
+Here we see all clients, even the ones without yards (eg client D).  But we only see one yard per client and we do not see yards that have no client.
+
+#!csharp
+
+var clientsInSupplier_OuterJoin = Given<Supplier>.Match((supplier, facts) =>
+  from client in facts.OfType<Client>()
+  where client.supplier == supplier && !client.IsDeleted
+  select new {
+    clientNames = client.Names.Select(name => name.value),
+    yards = from yardClients in facts.OfType<YardClients>()
+            where yardClients.client == client && !yardClients.IsDeleted
+            from yard in facts.OfType<Yard>()
+            where yard.supplier == supplier && !yard.IsDeleted && yard == yardClients.yard
+            select new
+            {                
+                yardNames = yard.Names.Select(name => name.value),
+                yardAddresses = yard.Addresses.Select(address => new
+                {
+                    street = address.street,
+                    number = address.number,
+                    postalCode = address.postalCode,
+                    city = address.place,
+                    country = address.country
+                })
+            }
+  }   
+);
+
+
+var clients = await jinagaClient.Query(clientsInSupplier_OuterJoin, supplier);
+
+var clientViewModels =
+  from client in clients
+  // let clientName = yard.clientNames.FirstOrDefault()
+  let yard = client.yards.FirstOrDefault()
+  let yardName = yard?.yardNames.FirstOrDefault()
+  let yardAddress = yard?.yardAddresses.FirstOrDefault()
+  select new
+  {
+    client,
+    // clientName = clientName ?? "Unknown client",
+    yardName = yardName ?? "Unknown yard",
+    street = yardAddress?.street ?? "Unknown street",
+    number = yardAddress?.number ?? "Unknown number",
+    postalCode = yardAddress?.postalCode ?? "Unknown postal code",
+    city = yardAddress?.city ?? "Unknown city",
+    country = yardAddress?.country ?? "Unknown country"
+  };
+
+clientViewModels
+
+#!markdown
+
+Here we see all clients, even the ones without yards (eg client D), and we see all their yards.  
+Two problems:
+- The yards are grouped by Client, while we want one line for every unique client-yard combination.   
+- We do not see yards that have no client.
+
+#!csharp
+
+var clients = await jinagaClient.Query(clientsInSupplier_OuterJoin, supplier);
+
+var clientViewModels =
+  from client in clients
+  
+  select new
+  {
+    clientName = client.clientNames.FirstOrDefault(),
+    yards = client.yards,
+  };
+
+clientViewModels
+
+#!markdown
+
+Here we see one line for every unique client-yard combination, but:  
+- Client D is missing
+- Yard X is missing   
+
+because multiple "froms" at the same level.
+
+#!csharp
+
+var clients = await jinagaClient.Query(clientsInSupplier_OuterJoin, supplier);
+
+var clientViewModels =
+  from client in clients
+  from yard in client.yards
+  
+  select new
+  {
+    clientName = client.clientNames.FirstOrDefault(),
+    yardName = yard.yardNames.FirstOrDefault(),
+    yardAddress = yard.yardAddresses.FirstOrDefault(),
+  };
+
+clientViewModels
+
+#!markdown
+
+Almost there !  
+Here we see all clients and all their yards in a flat list, but we do not see yards that have no client (eg YardX). 
+This cannot be solved directly in Jinaga, as a tupple has to fullfill all conditions in order to make inverses work.  So there is no OR and there is no UNION in Jinaga.
+The only way to solve this is to create a second specification and do a UNION on the results of the two queries.  
+  
+But a Union of two structures requires requires these structures to have exactly the same type ... so let's first define that type:
+
+#!csharp
+
+class ClientYardType {
+    public string clientName {get; init;}
+    public string yardName {get; init;}
+}
+
+#!csharp
+
+var clients = await jinagaClient.Query(clientsInSupplier_OuterJoin, supplier);
+
+// This query has to be a seperate Linq query.  It can not be part of the Jinaga query as Jinaga does NOT support DefaultIfEmpty, FirstOrDefault, First, Single, SingleOrDefault !!
+var clientViewModels =
+  from client in clients
+  
+  select new 
+  {
+
+    projection = from yard in client.yards.DefaultIfEmpty()
+    select new ClientYardType
+    {
+        //yard = yard
+      clientName = client.clientNames.FirstOrDefault(),
+      yardName = yard==null ? null : yard.yardNames.FirstOrDefault(),
+    }
+  };
+
+clientViewModels.SelectMany(i => i.projection)
+
+#!markdown
+
+The specification to get all yards which have no clients
+
+#!csharp
+
+var yardsInSupplierWithoutClient = Given<Supplier>.Match((supplier, facts) =>
+    from yard in facts.OfType<Yard>()
+    where yard.supplier == supplier 
+       && !yard.IsDeleted  
+       && !facts.Any<YardClients>( yardClients => yardClients.yard == yard
+                                          && !facts.Any<YardClientsDelete>(yardClientsDelete => yardClientsDelete.yardClients == yardClients)       
+       )
+    select new {
+        yard,
+        yardNames = yard.Names.Select(name => name.value)
+    }
+);
+
+
+var yards = await jinagaClient.Query(yardsInSupplierWithoutClient, supplier);
+
+var yardViewModels =
+  from yard in yards
+  select new ClientYardType
+  {
+    clientName = (string) null,
+    yardName = yard==null ? null : yard.yardNames.FirstOrDefault(),
+  };
+
+
+yardViewModels
+
+#!markdown
+
+And finally lets do a UNION and there we are  :-)
+
+#!csharp
+
+var unionModel = clientViewModels.SelectMany(i => i.projection).Union(yardViewModels);
+
+unionModel
+
+#!markdown
+
+## Play
+
+#!csharp
+
+using System.Collections.Immutable;
+
+class YardAddress {
+    public string street {get;init;}
+    public string number {get;init;}
+    public string postalCode {get;init;}
+    public string city {get;init;}
+    public string country {get;init;}
+}
+
+
+class ClientYard2Type {
+    public Yard yard{get; init;}
+    public IQueryable<string>? clientNames{get;init;} = null; //Enumerable.Empty<String>().AsQueryable();
+    public IQueryable<string> yardNames{get;init;}
+    public IQueryable<YardAddress> yardAddresses{get;init;}
+}
+
+#!csharp
+
+var clientsInSupplier_OuterJoin2 = Given<Supplier>.Match((supplier, facts) =>
+  from client in facts.OfType<Client>()
+  where client.supplier == supplier && !client.IsDeleted
+  select new {    
+    yards = from yardClients in facts.OfType<YardClients>()
+            where yardClients.client == client && !yardClients.IsDeleted
+            from yard in facts.OfType<Yard>()
+            where yard.supplier == supplier && !yard.IsDeleted && yard == yardClients.yard
+            select new ClientYard2Type
+            {   yard = yard,    
+                clientNames = client.Names.Select(name => name.value),         
+                yardNames = yard.Names.Select(name => name.value),
+                yardAddresses = yard.Addresses.Select(address => new YardAddress
+                {
+                    street = address.street,
+                    number = address.number,
+                    postalCode = address.postalCode,
+                    city = address.place,
+                    country = address.country
+                })
+            }
+  }   
+);
+
+
+var clients = await jinagaClient.Query(clientsInSupplier_OuterJoin2, supplier);
+
+clients
+
+#!csharp
+
+var yardsInSupplierWithoutClient2 = Given<Supplier>.Match((supplier, facts) =>
+    from yard in facts.OfType<Yard>()
+    where yard.supplier == supplier 
+       && !yard.IsDeleted  
+       && !facts.Any<YardClients>( yardClients => yardClients.yard == yard
+                                          && !facts.Any<YardClientsDelete>(yardClientsDelete => yardClientsDelete.yardClients == yardClients)       
+       )
+    select new 
+    {
+        yard = yard,
+        //clientNames = Array.Empty<String>(),
+        //clientNames = null,        
+        //clientNames =  [],
+        //clientNames = Queryable.Empty<String>(),
+        yardNames = yard.Names.Select(name => name.value),
+        yardAddresses = yard.Addresses.Select(address => new  YardAddress
+        {
+            street = address.street,
+            number = address.number,
+            postalCode = address.postalCode,
+            city = address.place,
+            country = address.country
+        })
+    }
+);
+
+
+var yards = await jinagaClient.Query(yardsInSupplierWithoutClient2, supplier);
+
+var yards2 =
+    from yard in yards
+    select new ClientYard2Type
+    {
+        yard = yard.yard,
+        clientNames = Enumerable.Empty<String>().AsQueryable(),
+        yardNames = yard.yardNames,
+        yardAddresses = yard.yardAddresses
+    };
+
+
+
+yards2
+
+#!csharp
+
+var unionModel2 = clients.SelectMany(i => i.yards).Union(yards2);
+
+unionModel2
 
 #!markdown
 

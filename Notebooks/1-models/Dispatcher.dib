@@ -200,6 +200,8 @@ A yard has some mutable properties:
 - Name
 - Address
 
+YardName and YardAddress are no longer stored as successors of Task, as their historic value is irrelevant for a task.
+
 #!csharp
 
 [FactType("DWS.Yard")]

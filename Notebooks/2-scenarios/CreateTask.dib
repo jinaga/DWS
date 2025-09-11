@@ -317,6 +317,11 @@ class ClientYard2Type {
 
 #!csharp
 
+// Here we have a "FROM CLIENT", so the result is a collection of clients. 
+// Because client D has no YardClient-fact the last element in the result is an empty collection.
+// In comparison with clientsInSupplier_OuterJoin this query return the clientNames on the same level as YardNames.  
+// We need them to be on the same level for our final result in the UI.
+
 var clientsInSupplier_OuterJoin2 = Given<Supplier>.Match((supplier, facts) =>
   from client in facts.OfType<Client>()
   where client.supplier == supplier && !client.IsDeleted

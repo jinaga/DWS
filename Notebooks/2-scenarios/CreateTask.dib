@@ -62,7 +62,7 @@ jinagaClient.RenderFacts(clientAName, clientBName, clientCName, clientDName, yar
 
 ## Drop-Down List of Clients (and Yards)
 
- Here we have an inner-join of clients and yards, because every result has to fullfill all conditions from lines 2 -> 7
+ Below we have an inner-join of clients and yards, because every result has to fullfill all conditions from lines 2 -> 7
 
 #!csharp
 
@@ -112,7 +112,7 @@ yardViewModels
 
 #!markdown
 
-Here we see all clients, even the ones without yards (eg client D).  But we only see one yard per client and we do not see yards that have no client.
+Below we see all clients, even the ones without yards (eg client D).  But we only see one yard per client and we do not see yards that have no client.
 
 #!csharp
 
@@ -165,7 +165,7 @@ clientViewModels
 
 #!markdown
 
-Here we see all clients, even the ones without yards (eg client D), and we see all their yards.  
+Below we see all clients, even the ones without yards (eg client D), and we see all their yards.  
 Two problems:
 - The yards are grouped by Client, while we want one line for every unique client-yard combination.   
 - We do not see yards that have no client.
@@ -187,7 +187,7 @@ clientViewModels
 
 #!markdown
 
-Here we see one line for every unique client-yard combination, but:  
+Below we see one line for every unique client-yard combination, but:  
 - Client D is missing
 - Yard X is missing   
 
@@ -213,7 +213,7 @@ clientViewModels
 #!markdown
 
 Almost there !  
-Here we see all clients and all their yards in a flat list, but we do not see yards that have no client (eg YardX). 
+Below we see all clients and all their yards in a flat list, but we do not see yards that have no client (eg YardX). 
 This cannot be solved directly in Jinaga, as a tupple has to fullfill all conditions in order to make inverses work.  So there is no OR and there is no UNION in Jinaga.
 The only way to solve this is to create a second specification and do a UNION on the results of the two queries.  
   
@@ -293,7 +293,7 @@ unionModel
 
 #!markdown
 
-## Play
+## Below we add the YardAddress to the previous result
 
 #!csharp
 
@@ -307,10 +307,10 @@ class YardAddress {
     public string country {get;init;}
 }
 
-
+// At this moment Jinage does not support IEnumerable here, but it should.  So awaiting a bugfix we use IQueryable.
 class ClientYard2Type {
     public Yard yard{get; init;}
-    public IQueryable<string>? clientNames{get;init;} = null; //Enumerable.Empty<String>().AsQueryable();
+    public IQueryable<string>? clientNames{get;init;} = null;   //Enumerable.Empty<String>().AsQueryable();
     public IQueryable<string> yardNames{get;init;}
     public IQueryable<YardAddress> yardAddresses{get;init;}
 }
@@ -358,6 +358,7 @@ var yardsInSupplierWithoutClient2 = Given<Supplier>.Match((supplier, facts) =>
     select new 
     {
         yard = yard,
+// We cannot add clientNames here as it is an empty collection which is currently NOT supported by Jinaga.  So we need another linq query after this.
         //clientNames = Array.Empty<String>(),
         //clientNames = null,        
         //clientNames =  [],
@@ -375,8 +376,13 @@ var yardsInSupplierWithoutClient2 = Given<Supplier>.Match((supplier, facts) =>
 );
 
 
+// Here we work with Jinaga.Query, which returns snapshots (collections).  
+// In .NET we will work with Jinaga.Watch which return Jinaga observables to which we can subscribe and so push everything in MVVM observables.
+
+
 var yards = await jinagaClient.Query(yardsInSupplierWithoutClient2, supplier);
 
+// And here is the linq query to add the empty clientNames collection.   But so this will be done differently in .NET MVVM using Jinaga.Watch.
 var yards2 =
     from yard in yards
     select new ClientYard2Type
